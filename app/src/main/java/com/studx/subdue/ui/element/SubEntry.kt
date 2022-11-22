@@ -35,7 +35,7 @@ fun SubEntry(){ // TODO: add subscription data as argument
 
 @Preview (showBackground = true)
 @Composable
-fun Preview(){
+fun SubEntryPreview(){
     SubdueTheme {
         SubEntry()
     }
