@@ -2,10 +2,9 @@ package com.studx.subdue
 
 import android.annotation.SuppressLint
 import android.content.res.Resources.Theme
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.icu.util.Calendar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
@@ -21,11 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
 
 
@@ -208,12 +210,66 @@ fun OneOffDetails() {
     LabeledInput("Date", "12/17/2022")
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecurringDetails() {
-    //#TODO calendar - first payment
+    //TODO calendar - first payment
 
-    LabeledInput("First payment", "12/17/2022")
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp, 0.dp)
+    ) {
+
+        Row() {
+            Text(
+                text = "Every",
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .width(110.dp)
+                    .padding(30.dp)
+            )
+
+            // billing cycle - change into numbers only
+            var billing_period_number by remember { mutableStateOf("1") }
+            OutlinedTextField(
+                value = billing_period_number,
+                onValueChange = { newText ->
+                    billing_period_number = newText
+                },
+                label = {
+                    Text(text = "")
+                },
+                modifier = Modifier
+                    .width(75.dp)
+                    .padding(10.dp)
+            )
+
+            // change into list (month/year)
+            var billing_period by remember { mutableStateOf("MONTH") }
+            OutlinedTextField(
+                value = billing_period,
+                onValueChange = { newText ->
+                    billing_period = newText
+                },
+                label = {
+                    Text(text = "")
+                },
+                modifier = Modifier
+                    .width(120.dp)
+                    .padding(10.dp)
+            )
+        }
+
+        LabeledInput("First payment", "12/17/2022")
+    }
 }
+
+//@Composable
+//fun DateDialog() {
+//    val date_picker = MaterialDatePicker.Builder.datePicker().build()
+//    date_picker.show(LocalContext.current, date_picker.toString())
+//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
