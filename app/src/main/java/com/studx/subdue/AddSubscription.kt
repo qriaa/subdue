@@ -1,11 +1,16 @@
 package com.studx.subdue
 
 import android.annotation.SuppressLint
+import android.content.res.Resources.Theme
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -15,20 +20,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditSubscriptionOneOff(navController: NavController) {
+fun AddSubscription(navController: NavController) {
     Scaffold(
         topBar = {
-            EditTopBar(navController)
+            AddTopBar(navController)
         },
         bottomBar = {},
         content = { innerPadding ->
@@ -36,7 +43,7 @@ fun EditSubscriptionOneOff(navController: NavController) {
                 contentPadding = innerPadding
             ) {
                 item {
-                    EditPage()
+                    AddPage()
                 }
             }
         }
@@ -51,7 +58,7 @@ fun EditSubscriptionOneOff(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditTopBar(navController: NavController) {
+fun AddTopBar(navController: NavController) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -86,7 +93,7 @@ fun EditTopBar(navController: NavController) {
 }
 
 @Composable
-fun EditPage() {
+fun AddPage() {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
@@ -116,6 +123,8 @@ fun EditPage() {
             CurrencyList()
         }
 
+        PagerView()
+
         LabeledInput("Labels", "e.g. Music")
         LabeledInput("Payment method", "e.g. Card")
         LabeledInput("Notes", "")
@@ -125,13 +134,85 @@ fun EditPage() {
     }
 }
 
-@Composable
-fun buttonsRow() {
-    Row() {
-        Tab(selected = true, onClick = { /*TODO*/ }) {
-
+@OptIn(ExperimentalFoundationApi::class)
+@Composable fun PagerView() {
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .background(Color.White)
+//    ) {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage
+        ) {
+            Tab(
+                selected = pagerState.currentPage == 0,
+                onClick = {
+                      coroutineScope.launch {
+                          pagerState.animateScrollToPage(0)
+                      }
+                },
+                text = {
+                    Text(
+                        text = "One-off",
+                        color = if (pagerState.currentPage!=0) Color.Gray else MaterialTheme.colorScheme.primary
+                    )
+                }
+            )
+            Tab(
+                selected = pagerState.currentPage == 1,
+                onClick = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(1)
+                    }
+                },
+                text = {
+                    Text(
+                        text = "Recurring",
+                        color = if (pagerState.currentPage!=1) Color.Gray else MaterialTheme.colorScheme.primary
+                    )
+                }
+            )
         }
+        PagerContent(pagerState = pagerState)
+//    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PagerContent(pagerState: PagerState) {
+    HorizontalPager(
+        pageCount = 2,
+        modifier = Modifier.fillMaxWidth(),
+        state = pagerState
+    ) { pager ->
+        when (pager) {
+
+            0 -> {
+                OneOffDetails()
+            }
+
+            1 -> {
+                RecurringDetails()
+            }
+        }
+
     }
+}
+
+
+@Composable
+fun OneOffDetails() {
+    //#TODO calendar - Date
+    LabeledInput("Date", "12/17/2022")
+}
+
+@Composable
+fun RecurringDetails() {
+    //#TODO calendar - first payment
+
+    LabeledInput("First payment", "12/17/2022")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -220,6 +301,6 @@ fun LabeledInput(label: String, placeholder: String) {
 
 @Preview
 @Composable
-fun PreviewEditSubOneOff() {
-    EditPage()
+fun PreviewAddSubsctiption() {
+    AddPage()
 }

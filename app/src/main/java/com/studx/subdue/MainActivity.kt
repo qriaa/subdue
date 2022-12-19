@@ -42,7 +42,7 @@ fun SetUpNavGraph(navController: NavHostController) {
             MainPage(subscriptions = subscriptions, navController)
         }
         composable(Screen.AddSub.route) {
-            EditSubscriptionOneOff(navController)
+            AddSubscription(navController)
         }
         composable(Screen.Settings.route) {
             Settings(navController)
