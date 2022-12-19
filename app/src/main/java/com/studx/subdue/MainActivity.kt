@@ -18,6 +18,9 @@ sealed class Screen(val route: String) {
     object Home : Screen(route = "home_screen")
     object AddSub : Screen(route = "add_sub_screen")
     object Settings : Screen(route = "settings_screen")
+    object Detail : Screen(route = "details_screen/{subscriptionId}") {
+        fun createRoute(subscriptionId: Int) = "details_screen/$subscriptionId"
+    }
 }
 
 class MainActivity : ComponentActivity() {
@@ -47,5 +50,10 @@ fun SetUpNavGraph(navController: NavHostController) {
         composable(Screen.Settings.route) {
             Settings(navController)
         }
+//        composable(Screen.SubscriptionDetails.route) {
+//            navBackStackEntry ->
+//            val subscriptionId = navBackStackEntry.arguments.getString("subscriptionId") //get what?
+//            SubscriptionDetails(subscriptionId = subscriptionId.toInt())
+//        }
     }
 }
