@@ -1,9 +1,14 @@
 package com.studx.subdue.logic
 
+import android.content.Context
 import android.icu.math.BigDecimal
 import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
 import android.icu.util.Currency
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import java.io.File
+import java.util.Date
 
 enum class TimeInterval {
     DAY,
@@ -43,40 +48,54 @@ data class Subscription (
     var currency: Currency = Currency.getInstance("PLN"),
     var timeMultiplier: Int = 0,
     var timeInterval: TimeInterval = TimeInterval.MONTH,
-    var dateAnchor: GregorianCalendar,
+    var dateAnchor: Date,
     var isOneOff: Boolean = true
 )
 
 /**
- * This singleton (`object`) manages business logic.
+ * This singleton (`object`) manages logic.
  *
  */
 object SubLogic {
     private val subList: MutableList<Subscription> = mutableListOf()
+    private val saveFilename: String = "SubdueData.json"
 
-    public fun getSubList(): MutableList<Subscription>{
+    fun getSubList(): MutableList<Subscription>{
         return subList
     }
 
-    public fun addSub(subscription: Subscription){
+    fun addSub(subscription: Subscription){
         subList.add(subscription)
     }
 
-    public fun removeSub(subscription: Subscription){
+    fun removeSub(subscription: Subscription){
         subList.remove(subscription)
     }
 
     // Utility
-    public fun calculateSum(timeInterval: TimeInterval){
+    fun calculateSum(timeInterval: TimeInterval){
         // TODO: return tuple of (alreadyPaid, sumOfPayments)
     }
 
     // Persistence
-    public fun saveSubs(){
-        // TODO: save to JSON - Gson
+    fun saveSubs(context: Context){
+        val gsonBuilder: GsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(Currency::class.java, CurrencySerializer())
+        gsonBuilder.registerTypeAdapter(Currency::class.java, CurrencyDeserializer())
+        gsonBuilder.registerTypeAdapter(BigDecimal::class.java, BigDecimalSerializer())
+        gsonBuilder.registerTypeAdapter(BigDecimal::class.java, BigDecimalDeserializer())
+        val gson: Gson = gsonBuilder.create()
+        val outputJSON: String = gson.toJson(subList)
+        val file = File(context.filesDir, saveFilename)
+        if (!file.exists()) {
+            file.createNewFile()
+            file.setReadable(true)
+            file.setWritable(true)
+        }
+        file.writeText(outputJSON)
     }
 
-    public fun loadSubs(){
+    fun loadSubs(){
 
     }
 }
