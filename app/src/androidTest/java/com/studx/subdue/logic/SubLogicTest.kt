@@ -17,8 +17,7 @@ class SubLogicTest {
     fun addSubTest() {
         val minSub: com.studx.subdue.logic.Subscription = com.studx.subdue.logic.Subscription(
             name = "test",
-            image = 0,
-            dateAnchor = Date()
+            image = 0
         )
         SubLogic.addSub(minSub)
         assertEquals(SubLogic.getSubList()[0], minSub)
@@ -29,10 +28,13 @@ class SubLogicTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         val minSub: com.studx.subdue.logic.Subscription = com.studx.subdue.logic.Subscription(
             name = "test",
-            image = 0,
-            dateAnchor = Date()
+            image = 0
         )
+
         SubLogic.addSub(minSub)
         SubLogic.saveSubs(appContext)
+        SubLogic.loadSubs(appContext)
+
+        assertEquals(SubLogic.getSubList()[0].hashCode(), minSub.hashCode())
     }
 }

@@ -2,13 +2,13 @@ package com.studx.subdue.logic
 
 import android.content.Context
 import android.icu.math.BigDecimal
-import android.icu.util.Calendar
-import android.icu.util.GregorianCalendar
 import android.icu.util.Currency
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import java.io.File
-import java.util.Date
+import java.lang.reflect.Type
+import java.time.LocalDate
 
 enum class TimeInterval {
     DAY,
@@ -48,16 +48,38 @@ data class Subscription (
     var currency: Currency = Currency.getInstance("PLN"),
     var timeMultiplier: Int = 0,
     var timeInterval: TimeInterval = TimeInterval.MONTH,
-    var dateAnchor: Date,
+    var dateAnchor: LocalDate = LocalDate.now(),
     var isOneOff: Boolean = true
 )
+{
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
 
+        other as Subscription
+
+        if(
+            name != other.name ||
+            notes != other.notes ||
+            paymentMethod != other.paymentMethod ||
+            image != other.image ||
+            cost != other.cost ||
+            currency != other.currency ||
+            timeMultiplier != other.timeMultiplier ||
+            timeInterval != other.timeInterval ||
+            dateAnchor != other.dateAnchor ||
+            isOneOff != other.isOneOff
+        )
+            return false
+        return true
+    }
+}
 /**
  * This singleton (`object`) manages logic.
  *
  */
 object SubLogic {
-    private val subList: MutableList<Subscription> = mutableListOf()
+    private var subList: MutableList<Subscription> = mutableListOf()
     private val saveFilename: String = "SubdueData.json"
 
     fun getSubList(): MutableList<Subscription>{
@@ -81,9 +103,8 @@ object SubLogic {
     fun saveSubs(context: Context){
         val gsonBuilder: GsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(Currency::class.java, CurrencySerializer())
-        gsonBuilder.registerTypeAdapter(Currency::class.java, CurrencyDeserializer())
         gsonBuilder.registerTypeAdapter(BigDecimal::class.java, BigDecimalSerializer())
-        gsonBuilder.registerTypeAdapter(BigDecimal::class.java, BigDecimalDeserializer())
+        gsonBuilder.registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
         val gson: Gson = gsonBuilder.create()
         val outputJSON: String = gson.toJson(subList)
         val file = File(context.filesDir, saveFilename)
@@ -95,7 +116,18 @@ object SubLogic {
         file.writeText(outputJSON)
     }
 
-    fun loadSubs(){
-
+    fun loadSubs(context: Context){
+        val gsonBuilder: GsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(Currency::class.java, CurrencyDeserializer())
+        gsonBuilder.registerTypeAdapter(BigDecimal::class.java, BigDecimalDeserializer())
+        gsonBuilder.registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
+        val gson: Gson = gsonBuilder.create()
+        val file = File(context.filesDir, saveFilename)
+        if (!file.exists()) {
+            return
+        }
+        val jsonText = file.readText()
+        val listType: Type = object : TypeToken<MutableList<Subscription>>(){}.type
+        this.subList = gson.fromJson<MutableList<Subscription>>(jsonText, listType)
     }
 }

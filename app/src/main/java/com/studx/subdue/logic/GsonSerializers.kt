@@ -1,9 +1,12 @@
 package com.studx.subdue.logic
 
 import android.icu.math.BigDecimal
+import android.icu.util.Calendar
 import android.icu.util.Currency
+import android.icu.util.GregorianCalendar
 import com.google.gson.*
 import java.lang.reflect.Type
+import java.time.LocalDate
 
 class CurrencySerializer : JsonSerializer<Currency>{
     override fun serialize(
@@ -48,5 +51,28 @@ class BigDecimalDeserializer : JsonDeserializer<BigDecimal> {
             : BigDecimal
     {
         return BigDecimal(json.asJsonPrimitive.asBigDecimal)
+    }
+}
+
+class LocalDateSerializer : JsonSerializer<LocalDate>{
+    override fun serialize(
+        src: LocalDate,
+        typeOfSrc: Type,
+        context: JsonSerializationContext)
+            : JsonElement
+    {
+        return JsonPrimitive(src.toString())
+    }
+}
+
+class LocalDateDeserializer : JsonDeserializer<LocalDate> {
+    override fun deserialize(
+        json: JsonElement,
+        typeOfSrc: Type,
+        context: JsonDeserializationContext
+    )
+            : LocalDate
+    {
+        return LocalDate.parse(json.toString().trim('"'))
     }
 }
