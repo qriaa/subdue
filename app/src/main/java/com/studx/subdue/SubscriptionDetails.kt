@@ -22,16 +22,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.studx.subdue.*
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubscriptionDetails(navController: NavController, subscription: Subscription) {
+fun SubscriptionDetails(/*navController: NavController,*/ subscription: Subscription) {
     Scaffold(
         topBar = {
-            SubscriptionDetailsTopBar(navController)
+            SubscriptionDetailsTopBar(/*navController*/)
         },
         bottomBar = {},
         content = { innerPadding ->
@@ -46,6 +47,11 @@ fun SubscriptionDetails(navController: NavController, subscription: Subscription
     )
 }
 
+@Preview
+@Composable
+fun SubscriptionDetailsPreview() {
+    SubscriptionDetails(subscription = subscriptions[1])
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,36 +66,52 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
             painter = painterResource(subscription.image),
             contentDescription = "Subscription image",
             modifier = Modifier
-                .size(140.dp)
+                .size(100.dp)
                 .background(Color.White)
                 .clip(CircleShape)
-                .padding(15.dp)
         )
 
         Text(
             text = subscription.name,
-            modifier = Modifier.padding(10.dp, 0.dp)
+            modifier = Modifier.padding(0.dp, 18.dp),
+            fontSize = 30.sp,
         )
 
+        Text(
+            text = subscription.cost.toString() + " " + subscription.currency,
+            modifier = Modifier.padding(0.dp, 8.dp),
+            fontSize = 22.sp,
+        )
 
-//        NameInput()
-//
-//        Row() {
-//            PriceInput()
-//            CurrencyList()
-//        }
-//
-//        PagerView()
-//
-//        LabeledInput("Labels", "e.g. Music")
-//        LabeledInput("Payment method", "e.g. Card")
-//        LabeledInput("Notes", "")
+        Text(
+            text = "/ " + subscription.timeInterval,
+            modifier = Modifier.padding(0.dp, 4.dp),
+            fontSize = 14.sp,
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        if (subscription.isOneOff) {
+            Text(
+                text = "One-off",
+                modifier = Modifier.padding(0.dp, 7.dp),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.primary
+            )
+        } else {
+            Text(
+                text = "Recurring",
+                modifier = Modifier.padding(0.dp, 7.dp),
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubscriptionDetailsTopBar(navController: NavController) {
+fun SubscriptionDetailsTopBar(/*navController: NavController*/) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -100,11 +122,11 @@ fun SubscriptionDetailsTopBar(navController: NavController) {
         },
         navigationIcon = {
             IconButton(onClick = {
-                navController.navigate(Screen.Home.route) {
-                    popUpTo(Screen.Home.route) {
-                        inclusive = true
-                    }
-                }
+//                navController.navigate(Screen.Home.route) {
+//                    popUpTo(Screen.Home.route) {
+//                        inclusive = true
+//                    }
+//                }
             }) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
@@ -113,7 +135,14 @@ fun SubscriptionDetailsTopBar(navController: NavController) {
             }
         },
         actions = {
-            IconButton(onClick = { /* doSomething() */ }) {
+            IconButton(onClick = {
+//                subscriptions.remove(subscription)
+//                navController.navigate(Screen.Home.route) {
+//                    popUpTo(Screen.Home.route) {
+//                        inclusive = true
+//                    }
+//                }
+            }) {
                 Icon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = "Delete"
