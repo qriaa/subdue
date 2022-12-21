@@ -137,6 +137,7 @@ fun AddPage() {
     }
 }
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable fun PagerView() {
     val pagerState = rememberPagerState()
@@ -351,7 +352,7 @@ fun CurrencyList() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PriceInput() {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf("Price") }
     OutlinedTextField(value = text,
         onValueChange = { newText ->
             text = newText
@@ -367,7 +368,7 @@ fun PriceInput() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NameInput() {
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf("Name") }
     OutlinedTextField(value = text,
         onValueChange = { newText ->
             text = newText
@@ -385,7 +386,9 @@ fun NameInput() {
         label = {
             Text(text = "")
         },
-        modifier = Modifier.padding(3.dp))
+        modifier = Modifier.padding(3.dp)
+    )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

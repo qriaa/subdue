@@ -1,5 +1,6 @@
 package com.studx.subdue
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +13,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.studx.subdue.ui.SubscriptionDetails
 import com.studx.subdue.ui.theme.SubdueTheme
 
 sealed class Screen(val route: String) {
@@ -31,19 +31,19 @@ class MainActivity : ComponentActivity() {
         var darkMode by mutableStateOf(false)
 
         setContent {
-            SubdueTheme(darkTheme = darkMode || isSystemInDarkTheme()) { // darkmode do ogarniecia bo to nie bedzie dzialalo
+            SubdueTheme(darkTheme = darkMode || isSystemInDarkTheme()) {
                 val navController = rememberNavController()
-                SetUpNavGraph(navController = navController)
+                SetUpNavGraph(this, navController = navController)
             }
         }
     }
 }
 
 @Composable
-fun SetUpNavGraph(navController: NavHostController) {
+fun SetUpNavGraph(context: Context, navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home_screen") {
         composable(Screen.Home.route) {
-            MainPage(subscriptions = subscriptions, navController)
+            MainPage(context, subscriptions = subscriptions, navController)
         }
         composable(Screen.AddSub.route) {
             AddSubscription(navController)

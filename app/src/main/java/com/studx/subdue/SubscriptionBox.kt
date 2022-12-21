@@ -29,7 +29,8 @@ fun Subscription(rowHeight: Int, rowColor: Color, subscription: Subscription){
             contentDescription = "Custom image",
             modifier = Modifier
                 .size(90.dp)
-                .background(Color.White)
+                .background(Color.White),
+
         )
         Spacer(modifier = Modifier.fillMaxWidth(0.1f))
 
@@ -62,7 +63,7 @@ fun Subscription(rowHeight: Int, rowColor: Color, subscription: Subscription){
                 fontSize = 16.sp
             )
             Text(
-                text= subscription.dueTo,
+                text= subscription.date,
                 fontSize = 15.sp,
                 color= Color.Gray
             )
@@ -76,6 +77,6 @@ fun PreviewSubscription() {
     Subscription(
         rowHeight = 90,
         rowColor = MaterialTheme.colorScheme.primaryContainer,
-        Subscription("AMAZON PRIME", R.drawable.amazon_prime, 10.00, "PLN", "MONTH", "14/02/2023")
+        Subscription("AMAZON PRIME", R.drawable.amazon_prime, 10.00, "PLN", "MONTH", "14/02/2023", false)
     )
 }

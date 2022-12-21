@@ -1,6 +1,8 @@
 package com.studx.subdue
 
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 
 const val ROW_HEIGHT = 90
@@ -25,7 +28,7 @@ const val ROW_HEIGHT = 90
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPage(subscriptions: List<Subscription>, navController: NavHostController) {
+fun MainPage(currContext: Context, subscriptions: List<Subscription>, navController: NavHostController) {
     Scaffold(
         topBar = {
             TopBar(navController)
@@ -53,8 +56,17 @@ fun MainPage(subscriptions: List<Subscription>, navController: NavHostController
                 contentPadding = innerPadding,
                 verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
-                items(subscriptions.sortedBy { subscription -> subscription.dueTo }) { sub ->
-                    Subscription(rowHeight = ROW_HEIGHT, rowColor = MaterialTheme.colorScheme.primaryContainer, subscription = sub)
+                items(subscriptions.sortedBy { subscription -> subscription.date }) { sub ->
+                    Surface(onClick = {
+//                        navController.navigate(Screen.SubscriptionDetails.route)
+                        Toast.makeText(
+                            currContext,
+                            "Clicked on ${sub.name}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }) {
+                        Subscription(rowHeight = ROW_HEIGHT, rowColor = MaterialTheme.colorScheme.primaryContainer, subscription = sub)
+                    }
                 }
             }
         }
