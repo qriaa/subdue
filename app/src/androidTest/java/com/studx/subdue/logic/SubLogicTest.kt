@@ -17,7 +17,8 @@ class SubLogicTest {
     fun addSubTest() {
         val minSub: com.studx.subdue.logic.Subscription = com.studx.subdue.logic.Subscription(
             name = "test",
-            image = 0
+            image = "a",
+            isEmojiImg = false
         )
         SubLogic.addSub(minSub)
         assertEquals(SubLogic.getSubList()[0], minSub)
@@ -28,7 +29,8 @@ class SubLogicTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         val minSub: com.studx.subdue.logic.Subscription = com.studx.subdue.logic.Subscription(
             name = "test",
-            image = 0
+            image = "a",
+            isEmojiImg = false
         )
 
         SubLogic.addSub(minSub)

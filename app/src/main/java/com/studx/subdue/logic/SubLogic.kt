@@ -8,14 +8,10 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.lang.reflect.Type
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
-enum class TimeInterval {
-    DAY,
-    WEEK,
-    MONTH,
-    YEAR
-}
 
 /**
  * This class contains data about a subscription.
@@ -23,7 +19,7 @@ enum class TimeInterval {
  * @property[name] Name of subscription
  * @property[notes] User's notes of subscription (Optional)
  * @property[paymentMethod] User's notes of their payment method (Optional)
- * @property[image] Image (path to image in res?;emoji when no predetermined image?) of subscription
+ * @property[image] Image (path to image in res, emoji when no predetermined image) of subscription
  * @property[cost] Cost of subscription
  * @property[timeMultiplier] How many times should the timeType (month/day/year etc.) be
  * multiplied to produce a new dateAnchor.
@@ -43,11 +39,12 @@ data class Subscription (
     var name: String,
     var notes: String = "",
     var paymentMethod: String = "",
-    var image: Int, // TODO: solve image/emoji problem
+    var image: String,
+    var isEmojiImg: Boolean,
     var cost: BigDecimal = BigDecimal(0),
     var currency: Currency = Currency.getInstance("PLN"),
-    var timeMultiplier: Int = 0,
-    var timeInterval: TimeInterval = TimeInterval.MONTH,
+    var timeMultiplier: Long = 0,
+    var timeInterval: ChronoUnit = ChronoUnit.MONTHS,
     var dateAnchor: LocalDate = LocalDate.now(),
     var isOneOff: Boolean = true
 )
@@ -95,8 +92,47 @@ object SubLogic {
     }
 
     // Utility
-    fun calculateSum(timeInterval: TimeInterval){
-        // TODO: return tuple of (alreadyPaid, sumOfPayments)
+    fun updatePayment(sub: Subscription){
+        if(sub.isOneOff){
+            removeSub(sub)
+            return
+        }
+        val newDate = sub.dateAnchor
+        newDate.plus(sub.timeMultiplier, sub.timeInterval)
+        sub.dateAnchor = newDate
+    }
+
+    fun updateAllPayments(){
+        val today = LocalDate.now()
+        for(sub in subList){
+            if(sub.dateAnchor.isEqual(today)){
+                updatePayment(sub)
+            }
+        }
+    }
+
+    fun calculateSum(timeInterval: ChronoUnit){
+        // TODO: return tuple of (alreadyPaid, sumOfPayments) (this is hell)
+        val today = LocalDate.now()
+        var alreadyPaid: BigDecimal = BigDecimal(0)
+        var sumOfPayments: BigDecimal = BigDecimal(0)
+        if(timeInterval == ChronoUnit.WEEKS){
+            val weekStart = today.with(DayOfWeek.MONDAY)
+            val weekEnd = weekStart.plusWeeks(1)
+            for(sub in subList){
+                if((sub.dateAnchor.isAfter(weekStart) || sub.dateAnchor.isEqual(weekStart))
+                           && sub.dateAnchor.isBefore(weekEnd)){
+                    if(sub.dateAnchor.isBefore(today)) {
+                        alreadyPaid.add(sub.cost)
+                    }
+                    }
+            }
+
+        } else if (timeInterval == ChronoUnit.MONTHS) {
+
+        } else if (timeInterval == ChronoUnit.YEARS) {
+
+        }
     }
 
     // Persistence
