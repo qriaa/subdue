@@ -91,14 +91,18 @@ object SubLogic {
         subList.remove(subscription)
     }
 
+    fun removeAllSubs(){
+        subList.clear()
+    }
+
     // Utility
     fun updatePayment(sub: Subscription){
         if(sub.isOneOff){
             removeSub(sub)
             return
         }
-        val newDate = sub.dateAnchor
-        newDate.plus(sub.timeMultiplier, sub.timeInterval)
+        var newDate = sub.dateAnchor
+        newDate = newDate.plus(sub.timeMultiplier, sub.timeInterval)
         sub.dateAnchor = newDate
     }
 
@@ -111,28 +115,51 @@ object SubLogic {
         }
     }
 
-    fun calculateSum(timeInterval: ChronoUnit){
-        // TODO: return tuple of (alreadyPaid, sumOfPayments) (this is hell)
+    /**
+     * This function calculates the payments (already and to be) made in this time interval
+     * @param[timeInterval] Time interval in which to calculate
+     * @return a pair of already paid subscriptions and sum of payments
+     */
+    fun calculatePaymentsSum(timeInterval: ChronoUnit): Pair<BigDecimal, BigDecimal> {
+        // TODO: take one-off into account
         val today = LocalDate.now()
         var alreadyPaid: BigDecimal = BigDecimal(0)
         var sumOfPayments: BigDecimal = BigDecimal(0)
-        if(timeInterval == ChronoUnit.WEEKS){
-            val weekStart = today.with(DayOfWeek.MONDAY)
-            val weekEnd = weekStart.plusWeeks(1)
-            for(sub in subList){
-                if((sub.dateAnchor.isAfter(weekStart) || sub.dateAnchor.isEqual(weekStart))
-                           && sub.dateAnchor.isBefore(weekEnd)){
-                    if(sub.dateAnchor.isBefore(today)) {
-                        alreadyPaid.add(sub.cost)
-                    }
-                    }
-            }
-
+        val rangeStart: LocalDate
+        val rangeStop: LocalDate
+        if(timeInterval == ChronoUnit.WEEKS){ // god forgive me for this
+            rangeStart = today.with(DayOfWeek.MONDAY)
+            rangeStop = rangeStart.plusWeeks(1)
         } else if (timeInterval == ChronoUnit.MONTHS) {
-
+            rangeStart = today.withDayOfMonth(1)
+            rangeStop = rangeStart.plusMonths(1)
         } else if (timeInterval == ChronoUnit.YEARS) {
-
+            rangeStart = today.withDayOfYear(1)
+            rangeStop = rangeStart.plusYears(1)
+        } else {
+            return Pair(BigDecimal(0), BigDecimal(0))
         }
+        for(sub in subList){
+            if((sub.dateAnchor.isAfter(rangeStart) || sub.dateAnchor.isEqual(rangeStart))
+                && sub.dateAnchor.isBefore(rangeStop)) {
+                var checkedDate = sub.dateAnchor
+                while(!checkedDate.isBefore(rangeStart)) { //check past repetitions
+                    if(checkedDate.isBefore(today)){
+                        alreadyPaid = alreadyPaid.add(sub.cost)
+                    }
+                    sumOfPayments = sumOfPayments.add(sub.cost)
+                    checkedDate = checkedDate.minus(sub.timeMultiplier, sub.timeInterval)
+                }
+                checkedDate = sub.dateAnchor.plus(sub.timeMultiplier, sub.timeInterval)
+                while(checkedDate.isBefore(rangeStop)) { //check future repetitions
+                    if(checkedDate.isAfter(today)) {
+                        sumOfPayments = sumOfPayments.add(sub.cost)
+                    }
+                    checkedDate = checkedDate.plus(sub.timeMultiplier, sub.timeInterval)
+                }
+            }
+        }
+        return Pair(alreadyPaid, sumOfPayments)
     }
 
     // Persistence

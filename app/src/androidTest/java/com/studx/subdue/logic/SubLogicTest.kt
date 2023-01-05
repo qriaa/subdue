@@ -1,21 +1,64 @@
 package com.studx.subdue.logic
 
-import android.content.ContextWrapper
-import android.icu.util.GregorianCalendar
+import android.icu.math.BigDecimal
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
 import org.junit.Test
 import org.junit.runner.RunWith
-
 import org.junit.Assert.*
 import java.util.*
 
+import com.studx.subdue.logic.*
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+
 @RunWith(AndroidJUnit4::class)
 class SubLogicTest {
+
+    fun prepareSubs() {
+        SubLogic.removeAllSubs()
+        SubLogic.addSub(Subscription(
+            name = "TwoEachDaySub",
+            image = "a",
+            isEmojiImg = false,
+            cost = BigDecimal(2),
+            timeMultiplier = 1,
+            timeInterval = ChronoUnit.DAYS,
+            isOneOff = false
+        ))
+        SubLogic.addSub(Subscription(
+            name = "ThreeEachWeekSub",
+            image = "a",
+            isEmojiImg = false,
+            cost = BigDecimal(3),
+            timeMultiplier = 1,
+            timeInterval = ChronoUnit.WEEKS,
+            isOneOff = false
+        ))
+        SubLogic.addSub(Subscription(
+            name = "FiveEachMonthSub",
+            image = "a",
+            isEmojiImg = false,
+            cost = BigDecimal(5),
+            timeMultiplier = 1,
+            timeInterval = ChronoUnit.MONTHS,
+            isOneOff = false
+        ))
+        SubLogic.addSub(Subscription(
+            name = "SevenEachYearSub",
+            image = "a",
+            isEmojiImg = false,
+            cost = BigDecimal(7),
+            timeMultiplier = 1,
+            timeInterval = ChronoUnit.YEARS,
+            isOneOff = false
+        ))
+    }
+
     @Test
     fun addSubTest() {
-        val minSub: com.studx.subdue.logic.Subscription = com.studx.subdue.logic.Subscription(
+        val minSub: Subscription = Subscription(
             name = "test",
             image = "a",
             isEmojiImg = false
@@ -27,7 +70,7 @@ class SubLogicTest {
     @Test
     fun saveLoadTest() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val minSub: com.studx.subdue.logic.Subscription = com.studx.subdue.logic.Subscription(
+        val minSub: Subscription = Subscription(
             name = "test",
             image = "a",
             isEmojiImg = false
@@ -38,5 +81,37 @@ class SubLogicTest {
         SubLogic.loadSubs(appContext)
 
         assertEquals(SubLogic.getSubList()[0].hashCode(), minSub.hashCode())
+    }
+
+    @Test
+    fun testCalcSum() {
+        prepareSubs()
+
+        val today = LocalDate.now()
+
+        val weekPair = SubLogic.calculatePaymentsSum(ChronoUnit.WEEKS)
+        val monthStart = today.withDayOfMonth(1)
+        val monthEnd = monthStart.plusMonths(1)
+        val monthPair = SubLogic.calculatePaymentsSum(ChronoUnit.MONTHS)
+        val yearStart = today.withDayOfYear(1)
+        val yearEnd = yearStart.plusYears(1)
+        val yearPair = SubLogic.calculatePaymentsSum(ChronoUnit.YEARS)
+
+        assertEquals(BigDecimal((2*7) + 3 + 5 + 7), weekPair.second)
+
+        val expectedMonthResult = BigDecimal(
+            (ChronoUnit.DAYS.between(monthStart, monthEnd) * 2)
+            + (ChronoUnit.WEEKS.between(monthStart, monthEnd) * 3)
+            + 5 + 7
+        )
+        assertEquals(expectedMonthResult, monthPair.second)
+
+        val expectedYearResult = BigDecimal(
+            (ChronoUnit.DAYS.between(yearStart, yearEnd) * 2)
+            + (ChronoUnit.WEEKS.between(yearStart, yearEnd) * 3)
+            + (ChronoUnit.MONTHS.between(yearStart, yearEnd) * 5)
+            + 7
+        )
+        assertEquals(expectedYearResult, yearPair.second)
     }
 }
