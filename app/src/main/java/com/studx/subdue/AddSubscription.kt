@@ -1,11 +1,7 @@
 package com.studx.subdue
 
 import android.annotation.SuppressLint
-import android.content.res.Resources.Theme
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
@@ -20,13 +16,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.date.datepicker
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -190,6 +193,8 @@ fun PagerContent(pagerState: PagerState) {
         when (pager) {
 
             0 -> {
+                Spacer(modifier = Modifier.padding(16.dp, 16.dp))
+
                 OneOffDetails()
             }
 
@@ -204,15 +209,127 @@ fun PagerContent(pagerState: PagerState) {
 
 @Composable
 fun OneOffDetails() {
-    //#TODO calendar - Date
-    LabeledInput("Date", "12/17/2022")
+    DateDialog("Due to")
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecurringDetails() {
+    //TODO calendar - first payment
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp, 0.dp)
+    ) {
+
+        Row() {
+            Text(
+                text = "Every",
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .width(110.dp)
+                    .padding(30.dp)
+            )
+
+            // billing cycle - change into numbers only
+            var billing_period_number by remember { mutableStateOf("1") }
+            OutlinedTextField(
+                value = billing_period_number,
+                onValueChange = { newText ->
+                    billing_period_number = newText
+                },
+                label = {
+                    Text(text = "")
+                },
+                modifier = Modifier
+                    .width(75.dp)
+                    .padding(10.dp)
+            )
+
+            // change into list (month/year)
+            var billing_period by remember { mutableStateOf("MONTH") }
+            OutlinedTextField(
+                value = billing_period,
+                onValueChange = { newText ->
+                    billing_period = newText
+                },
+                label = {
+                    Text(text = "")
+                },
+                modifier = Modifier
+                    .width(120.dp)
+                    .padding(10.dp)
+            )
+        }
+
+        DateDialog("First payment date")
+    }
 }
 
 @Composable
-fun RecurringDetails() {
-    //#TODO calendar - first payment
+fun DateDialog(specifed_value : String) {
+    var pickedDate by remember {
+        mutableStateOf(LocalDate.now())
+    }
+    val formattedDate by remember {
+        derivedStateOf {
+            DateTimeFormatter
+                .ofPattern("MM/dd/yyyy")
+                .format(pickedDate)
+        }
+    }
 
-    LabeledInput("First payment", "12/17/2022")
+    val dateDialogState = rememberMaterialDialogState()
+
+    Button(
+        onClick = {
+            dateDialogState.show()
+        }
+    ) {
+        Text(text = specifed_value + ": " + formattedDate)
+    }
+
+    MaterialDialog(
+        dialogState = dateDialogState,
+        properties = DialogProperties(
+            dismissOnClickOutside = true
+        ),
+        buttons = {
+            positiveButton(text = "OK")
+            negativeButton(text = "CANCEL")
+        }
+    ) {
+        datepicker(
+            initialDate = LocalDate.now(),
+            locale = Locale("POLISH", "POLAND"),
+            title = "Pick a date of first payment"
+        ) {
+            pickedDate = it
+        }
+    }
+
+//    TextField(value = pickedDate,
+//        onValueChange = { newText ->
+//            pickedDate = formattedDate
+//        },
+//        label = {
+//            Text(text = "First payment")
+//        },
+//        trailingIcon = {
+//            IconButton(onClick = {
+//                date = ""
+//            }) {
+//                Icon(
+//                    imageVector = Icons.Filled.DateRange,
+//                    contentDescription = "Clear icon"
+//                )
+//            }
+//        },
+//        modifier = Modifier.padding(15.dp)
+//    )
+//    val date_picker = MaterialDatePicker.Builder.datePicker().build()
+//    date_picker.show(LocalContext.current, date_picker.toString())
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
