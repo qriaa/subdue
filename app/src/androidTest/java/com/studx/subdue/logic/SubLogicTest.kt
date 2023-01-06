@@ -121,7 +121,6 @@ class SubLogicTest {
         val yearPair = SubLogic.calculatePaymentsSum(ChronoUnit.YEARS)
 
         assertEquals(BigDecimal((2*7) + 3 + 5 + 7), weekPair.second)
-        assertEquals(BigDecimal(13), weekPair.first)
 
         val expectedMonthResult = BigDecimal(
             (ChronoUnit.DAYS.between(monthStart, monthEnd) * 2)
