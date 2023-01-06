@@ -24,7 +24,7 @@ import java.time.temporal.ChronoUnit
  * @property[timeMultiplier] How many times should the timeType (month/day/year etc.) be
  * multiplied to produce a new dateAnchor.
  * Can be empty due to it being a one-off.
- * @property[timeInterval] A TimeInterval which will be multiplied (not literally) by timeMultiplier
+ * @property[timeInterval] A TimeInterval which will be multiplied by timeMultiplier
  * to produce a new dateAnchor.
  * Can be empty due to it being a one-off.
  * @property[dateAnchor]
@@ -77,7 +77,7 @@ data class Subscription (
  */
 object SubLogic {
     private var subList: MutableList<Subscription> = mutableListOf()
-    private val saveFilename: String = "SubdueData.json"
+    private const val saveFilename: String = "SubdueData.json"
 
     fun getSubList(): MutableList<Subscription>{
         return subList
@@ -121,37 +121,54 @@ object SubLogic {
      * @return a pair of already paid subscriptions and sum of payments
      */
     fun calculatePaymentsSum(timeInterval: ChronoUnit): Pair<BigDecimal, BigDecimal> {
-        // TODO: take one-off into account
         val today = LocalDate.now()
-        var alreadyPaid: BigDecimal = BigDecimal(0)
-        var sumOfPayments: BigDecimal = BigDecimal(0)
+        var alreadyPaid = BigDecimal(0)
+        var sumOfPayments = BigDecimal(0)
         val rangeStart: LocalDate
         val rangeStop: LocalDate
-        if(timeInterval == ChronoUnit.WEEKS){ // god forgive me for this
-            rangeStart = today.with(DayOfWeek.MONDAY)
-            rangeStop = rangeStart.plusWeeks(1)
-        } else if (timeInterval == ChronoUnit.MONTHS) {
-            rangeStart = today.withDayOfMonth(1)
-            rangeStop = rangeStart.plusMonths(1)
-        } else if (timeInterval == ChronoUnit.YEARS) {
-            rangeStart = today.withDayOfYear(1)
-            rangeStop = rangeStart.plusYears(1)
-        } else {
-            return Pair(BigDecimal(0), BigDecimal(0))
+
+        when (timeInterval) { // god forgive me for this
+            ChronoUnit.WEEKS -> {
+                rangeStart = today.with(DayOfWeek.MONDAY)
+                rangeStop = rangeStart.plusWeeks(1)
+            }
+            ChronoUnit.MONTHS -> {
+                rangeStart = today.withDayOfMonth(1)
+                rangeStop = rangeStart.plusMonths(1)
+            }
+            ChronoUnit.YEARS -> {
+                rangeStart = today.withDayOfYear(1)
+                rangeStop = rangeStart.plusYears(1)
+            }
+            else -> {
+                return Pair(BigDecimal(0), BigDecimal(0))
+            }
         }
+
         for(sub in subList){
             if((sub.dateAnchor.isAfter(rangeStart) || sub.dateAnchor.isEqual(rangeStart))
                 && sub.dateAnchor.isBefore(rangeStop)) {
+
+                if(sub.isOneOff) {
+                    if(sub.dateAnchor.isBefore(today))
+                        alreadyPaid = alreadyPaid.add(sub.cost)
+                    sumOfPayments = sumOfPayments.add(sub.cost)
+                    continue
+                }
+
+                //check past repetitions
                 var checkedDate = sub.dateAnchor
-                while(!checkedDate.isBefore(rangeStart)) { //check past repetitions
+                while(!checkedDate.isBefore(rangeStart)) {
                     if(checkedDate.isBefore(today)){
                         alreadyPaid = alreadyPaid.add(sub.cost)
                     }
                     sumOfPayments = sumOfPayments.add(sub.cost)
                     checkedDate = checkedDate.minus(sub.timeMultiplier, sub.timeInterval)
                 }
+
+                //check future repetitions
                 checkedDate = sub.dateAnchor.plus(sub.timeMultiplier, sub.timeInterval)
-                while(checkedDate.isBefore(rangeStop)) { //check future repetitions
+                while(checkedDate.isBefore(rangeStop)) {
                     if(checkedDate.isAfter(today)) {
                         sumOfPayments = sumOfPayments.add(sub.cost)
                     }
@@ -164,7 +181,7 @@ object SubLogic {
 
     // Persistence
     fun saveSubs(context: Context){
-        val gsonBuilder: GsonBuilder = GsonBuilder()
+        val gsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(Currency::class.java, CurrencySerializer())
         gsonBuilder.registerTypeAdapter(BigDecimal::class.java, BigDecimalSerializer())
         gsonBuilder.registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
@@ -180,7 +197,7 @@ object SubLogic {
     }
 
     fun loadSubs(context: Context){
-        val gsonBuilder: GsonBuilder = GsonBuilder()
+        val gsonBuilder = GsonBuilder()
         gsonBuilder.registerTypeAdapter(Currency::class.java, CurrencyDeserializer())
         gsonBuilder.registerTypeAdapter(BigDecimal::class.java, BigDecimalDeserializer())
         gsonBuilder.registerTypeAdapter(LocalDate::class.java, LocalDateDeserializer())
@@ -191,6 +208,6 @@ object SubLogic {
         }
         val jsonText = file.readText()
         val listType: Type = object : TypeToken<MutableList<Subscription>>(){}.type
-        this.subList = gson.fromJson<MutableList<Subscription>>(jsonText, listType)
+        this.subList = gson.fromJson(jsonText, listType)
     }
 }

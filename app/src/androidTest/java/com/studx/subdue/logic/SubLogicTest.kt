@@ -16,7 +16,7 @@ import java.time.temporal.ChronoUnit
 @RunWith(AndroidJUnit4::class)
 class SubLogicTest {
 
-    fun prepareSubs() {
+    private fun prepareSubs() {
         SubLogic.removeAllSubs()
         SubLogic.addSub(Subscription(
             name = "TwoEachDaySub",
@@ -56,9 +56,32 @@ class SubLogicTest {
         ))
     }
 
+    fun addOneOffs(){
+        SubLogic.addSub(Subscription(
+            name = "ElevenOneOffTomorrow",
+            image = "a",
+            isEmojiImg = false,
+            cost = BigDecimal(7),
+            timeMultiplier = 1,
+            timeInterval = ChronoUnit.YEARS,
+            dateAnchor = LocalDate.now().plusDays(1),
+            isOneOff = false
+        ))
+        SubLogic.addSub(Subscription(
+            name = "ThirteenOneOffYesterday",
+            image = "a",
+            isEmojiImg = false,
+            cost = BigDecimal(7),
+            timeMultiplier = 1,
+            timeInterval = ChronoUnit.YEARS,
+            dateAnchor = LocalDate.now().plusDays(-1),
+            isOneOff = false
+        ))
+    }
+
     @Test
     fun addSubTest() {
-        val minSub: Subscription = Subscription(
+        val minSub = Subscription(
             name = "test",
             image = "a",
             isEmojiImg = false
@@ -70,7 +93,7 @@ class SubLogicTest {
     @Test
     fun saveLoadTest() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val minSub: Subscription = Subscription(
+        val minSub = Subscription(
             name = "test",
             image = "a",
             isEmojiImg = false
@@ -84,7 +107,7 @@ class SubLogicTest {
     }
 
     @Test
-    fun testCalcSum() {
+    fun testCalcRecSum() {
         prepareSubs()
 
         val today = LocalDate.now()
@@ -98,6 +121,7 @@ class SubLogicTest {
         val yearPair = SubLogic.calculatePaymentsSum(ChronoUnit.YEARS)
 
         assertEquals(BigDecimal((2*7) + 3 + 5 + 7), weekPair.second)
+        assertEquals(BigDecimal(13), weekPair.first)
 
         val expectedMonthResult = BigDecimal(
             (ChronoUnit.DAYS.between(monthStart, monthEnd) * 2)
