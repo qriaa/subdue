@@ -7,9 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.material3.R
@@ -19,12 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.studx.subdue.*
+import kotlin.math.round
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -98,6 +102,26 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.primary
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            OutlinedTextField(value = subscription.date, onValueChange = {},
+                label = { Text("Date of expiry", Modifier.background(color = Color.White)) },
+                modifier = Modifier
+                    .padding(10.dp, 0.dp),
+                enabled = false,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                    disabledBorderColor = MaterialTheme.colorScheme.primary,
+                    disabledLabelColor = MaterialTheme.colorScheme.primary,
+                    disabledTextColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                    textColor = Color.Black,
+                )
+            )
+
         } else {
             Text(
                 text = "Recurring",
@@ -105,7 +129,60 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.primary
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            OutlinedTextField(value = subscription.date, onValueChange = {},
+                label = { Text("Due date", Modifier.background(color = Color.White)) },
+                modifier = Modifier
+                    .padding(10.dp, 0.dp),
+                enabled = false,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                    disabledBorderColor = MaterialTheme.colorScheme.primary,
+                    disabledLabelColor = MaterialTheme.colorScheme.primary,
+                    disabledTextColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                    textColor = Color.Black,
+                )
+            )
         }
+
+//        OutlinedTextField(value = subscription.paymentMethod, onValueChange = {},
+//            label = { Text("Payment method", Modifier.background(color = Color.White)) },
+//            modifier = Modifier
+//                .padding(10.dp, 0.dp),
+//            enabled = false,
+//            colors = TextFieldDefaults.outlinedTextFieldColors(
+//                focusedBorderColor = MaterialTheme.colorScheme.primary,
+//                unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+//                disabledBorderColor = MaterialTheme.colorScheme.primary,
+//                disabledLabelColor = MaterialTheme.colorScheme.primary,
+//                disabledTextColor = MaterialTheme.colorScheme.primary,
+//                focusedLabelColor = MaterialTheme.colorScheme.primary,
+//                unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+//                textColor = Color.Black,
+//            )
+//        )
+
+//        OutlinedTextField(value = subscription.notes, onValueChange = {},
+//            label = { Text("Notes", Modifier.background(color = Color.White)) },
+//            modifier = Modifier
+//                .padding(10.dp, 0.dp),
+//            enabled = false,
+//            colors = TextFieldDefaults.outlinedTextFieldColors(
+//                focusedBorderColor = MaterialTheme.colorScheme.primary,
+//                unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+//                disabledBorderColor = MaterialTheme.colorScheme.primary,
+//                disabledLabelColor = MaterialTheme.colorScheme.primary,
+//                disabledTextColor = MaterialTheme.colorScheme.primary,
+//                focusedLabelColor = MaterialTheme.colorScheme.primary,
+//                unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+//                textColor = Color.Black,
+//            )
+//        )
     }
 }
 

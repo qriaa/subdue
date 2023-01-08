@@ -216,8 +216,6 @@ fun OneOffDetails() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecurringDetails() {
-    //TODO calendar - first payment
-
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()

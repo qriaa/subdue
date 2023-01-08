@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
 fun SetUpNavGraph(context: Context, navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home_screen") {
         composable(Screen.Home.route) {
+            //#TODO wczytaj subskrypcje z bazy danych i przekaz do mainpage
             MainPage(context, subscriptions = subscriptions, navController)
         }
         composable(Screen.AddSub.route) {
