@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.studx.subdue.*
+import com.studx.subdue.logic.Subscription
 import kotlin.math.round
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -54,7 +55,7 @@ fun SubscriptionDetails(/*navController: NavController,*/ subscription: Subscrip
 @Preview
 @Composable
 fun SubscriptionDetailsPreview() {
-    SubscriptionDetails(subscription = subscriptions[1])
+//    SubscriptionDetails(subscription = subscriptions[1])
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,14 +67,25 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
             .fillMaxSize()
             .padding(10.dp, 0.dp)
     ) {
-        Image(
-            painter = painterResource(subscription.image),
-            contentDescription = "Subscription image",
-            modifier = Modifier
-                .size(100.dp)
-                .background(Color.White)
-                .clip(CircleShape)
-        )
+        if (subscription.isEmojiImg) {
+            Text(
+                text = subscription.image,
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(Color.White)
+                    .clip(CircleShape),
+            )
+        }
+        else {
+            Image(
+                painter = painterResource(subscription.image.toInt()),  //#TODO przypisac odpowiedni zasob z res/drawable do wyswietlenia
+                contentDescription = "Subscription icon",
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(Color.White)
+                    .clip(CircleShape),
+            )
+        }
 
         Text(
             text = subscription.name,
@@ -105,7 +117,7 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            OutlinedTextField(value = subscription.date, onValueChange = {},
+            OutlinedTextField(value = subscription.dateAnchor.toString(), onValueChange = {},
                 label = { Text("Date of expiry", Modifier.background(color = Color.White)) },
                 modifier = Modifier
                     .padding(10.dp, 0.dp),
@@ -132,7 +144,7 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            OutlinedTextField(value = subscription.date, onValueChange = {},
+            OutlinedTextField(value = subscription.dateAnchor.toString(), onValueChange = {},
                 label = { Text("Due date", Modifier.background(color = Color.White)) },
                 modifier = Modifier
                     .padding(10.dp, 0.dp),

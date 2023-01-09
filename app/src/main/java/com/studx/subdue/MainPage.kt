@@ -22,13 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.studx.subdue.logic.SubLogic
+import com.studx.subdue.logic.Subscription
+import java.time.temporal.ChronoUnit
 
 const val ROW_HEIGHT = 90
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPage(currContext: Context, subscriptions: List<Subscription>, navController: NavHostController) {
+fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, navController: NavHostController) {
     Scaffold(
         topBar = {
             TopBar(navController)
@@ -56,7 +59,7 @@ fun MainPage(currContext: Context, subscriptions: List<Subscription>, navControl
                 contentPadding = innerPadding,
                 verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
-                items(subscriptions.sortedBy { subscription -> subscription.date }) { sub ->
+                items(subscriptions.sortedBy { subscription -> subscription.dateAnchor }) { sub ->
                     Surface(onClick = {
 //                        navController.navigate(Screen.SubscriptionDetails.route)
                         Toast.makeText(
@@ -65,7 +68,7 @@ fun MainPage(currContext: Context, subscriptions: List<Subscription>, navControl
                             Toast.LENGTH_SHORT
                         ).show()
                     }) {
-                        Subscription(rowHeight = ROW_HEIGHT, rowColor = MaterialTheme.colorScheme.primaryContainer, subscription = sub)
+                        SubscriptionBox(rowHeight = ROW_HEIGHT, rowColor = MaterialTheme.colorScheme.primaryContainer, subscription = sub)
                     }
                 }
             }
@@ -83,15 +86,13 @@ fun PreviewTopAppBar() {
 fun BottomBar() {
     val selectedIndex = remember { mutableStateOf(0) }
     NavigationBar {
-
+        val (alreadyPaid, sumOfPayments)  = SubLogic.calculatePaymentsSum(ChronoUnit.MONTHS)
         NavigationBarItem(icon = {
-            Icon(imageVector = Icons.Outlined.KeyboardArrowUp,"")
+            Icon(imageVector = Icons.Outlined.KeyboardArrowUp,"Payments summary")
         },
-            label = { Text(text = "MONTHLY", fontSize = 13.sp) },
-            selected = (selectedIndex.value == 0),
-            onClick = {
-                selectedIndex.value = 0
-            })
+            label = { Text(text = "MONTHLY " + alreadyPaid + " / " + sumOfPayments, fontSize = 13.sp) },
+            selected = selectedIndex.value == 0,
+            onClick = { /* do sth */ })
     }
 }
 

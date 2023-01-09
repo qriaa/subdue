@@ -1,6 +1,8 @@
 package com.studx.subdue
 
 import android.content.Context
+import android.icu.math.BigDecimal
+import android.icu.util.Currency
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,7 +15,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.studx.subdue.logic.SubLogic
+import com.studx.subdue.logic.Subscription
 import com.studx.subdue.ui.theme.SubdueTheme
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 sealed class Screen(val route: String) {
     object Home : Screen(route = "home_screen")
@@ -44,7 +50,9 @@ fun SetUpNavGraph(context: Context, navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home_screen") {
         composable(Screen.Home.route) {
             //#TODO wczytaj subskrypcje z bazy danych i przekaz do mainpage
-            MainPage(context, subscriptions = subscriptions, navController)
+            SubLogic.loadSubs(context)
+            val subscriptions = SubLogic.getSubList()
+            MainPage(context, subscriptions, navController)
         }
         composable(Screen.AddSub.route) {
             AddSubscription(navController)
