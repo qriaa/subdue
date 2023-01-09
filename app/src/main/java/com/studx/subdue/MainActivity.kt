@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.studx.subdue.ui.SubscriptionDetails
 import com.studx.subdue.ui.theme.SubdueTheme
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
@@ -23,6 +24,9 @@ sealed class Screen(val route: String) {
     object Home : Screen(route = "home_screen")
     object AddSub : Screen(route = "add_sub_screen")
     object Settings : Screen(route = "settings_screen")
+    object SubscriptionDetails : Screen(route = "details_screen/{subscriptionId}") {
+        fun createRoute(subscriptionId: Int) = "details_screen/$subscriptionId"
+    }
 }
 
 class MainActivity : ComponentActivity() {
@@ -71,6 +75,11 @@ fun SetUpNavGraph(navController: NavHostController) {
         }
         composable(Screen.Settings.route) {
             Settings(navController)
+        }
+        composable(Screen.SubscriptionDetails.route) {
+//            navBackStackEntry ->
+//            val subscription = navBackStackEntry.arguments.get //get what?
+//            SubscriptionDetails(subscription = subscription)
         }
     }
 }
