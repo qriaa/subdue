@@ -66,7 +66,6 @@ fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, nav
             ) {
                 items(subscriptions.sortedBy { subscription -> subscription.dateAnchor }) { sub ->
                     Surface(
-                        shape = RoundedCornerShape(20.dp),
                         onClick = {
                         navController.navigate(Screen.SubscriptionDetails.createRoute(sub.id))
                     }) {

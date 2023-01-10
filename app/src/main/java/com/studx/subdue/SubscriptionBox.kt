@@ -48,9 +48,10 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription)
         modifier = Modifier
             .fillMaxWidth()
             .height(rowHeight.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
             .background(rowColor)
-            .clip(RoundedCornerShape(5.dp))
-            .border(1.dp, Color.Black, RoundedCornerShape(5.dp))
+
     ){
         // jezeli emoji to wyswietl zamiast ikonki emoji, czyli zapisany w image tekst
         if (subscription.isEmojiImg) {
@@ -65,7 +66,7 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription)
             Image(
                 painter = painterResource(R.drawable.recurring_subscription_icon),  //#TODO przypisac odpowiedni zasob z res/drawable do wyswietlenia
                 contentDescription = "Subscription icon",
-                alignment = Alignment.TopCenter,
+                alignment = Alignment.Center,
                 modifier = Modifier
                     .padding(4.dp)
                     .size(90.dp)
