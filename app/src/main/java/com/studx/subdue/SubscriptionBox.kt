@@ -4,8 +4,10 @@ import android.icu.math.BigDecimal
 import android.icu.util.Currency
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,10 +28,13 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription){
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .height(rowHeight.dp)
             .background(rowColor)
+            .clip(RoundedCornerShape(5.dp))
+            .border(1.dp, Color.Black, RoundedCornerShape(5.dp))
     ){
         // jezeli emoji to wyswietl zamiast ikonki emoji, czyli zapisany w image tekst
         if (subscription.isEmojiImg) {
@@ -37,34 +42,34 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription)
                 text = subscription.image,
                 modifier = Modifier
                     .size(90.dp)
-                    .background(Color.White)
-                    .clip(CircleShape),
+                    .clip(CircleShape)
             )
         }
         else {
             Image(
                 painter = painterResource(R.drawable.netflix_logo),  //#TODO przypisac odpowiedni zasob z res/drawable do wyswietlenia
                 contentDescription = "Subscription icon",
+                alignment = Alignment.TopCenter,
                 modifier = Modifier
+                    .padding(4.dp)
                     .size(90.dp)
-                    .background(Color.White)
-                    .clip(CircleShape),
+                    .clip(CircleShape)
                 )
         }
 
-        Spacer(modifier = Modifier.fillMaxWidth(0.1f))
+        Spacer(modifier = Modifier.fillMaxWidth(0.04f))
 
         Box(
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.CenterStart,
             modifier = Modifier
-                .fillMaxWidth(fraction = 0.37f)
+                .fillMaxWidth(fraction = 0.4f)
                 .fillMaxHeight()
         )
         {
             Text(
                 text= subscription.name.uppercase(),
-                textAlign = TextAlign.Center,
-                fontSize = 18.sp
+                textAlign = TextAlign.Left,
+                fontSize = 22.sp
             )
         }
 
@@ -74,19 +79,36 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription)
             .fillMaxHeight()
             .fillMaxWidth()
         ){
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(18.dp))
             Text(
                 text = subscription.cost.toFloat().toString() + " " + subscription.currency, //#TODO bigdecimal do zaokraglenia
-                fontSize = 16.sp)
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
             Text(
                 text= "/ ${subscription.timeInterval}",
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
-            Text(
-                text= "Due " + subscription.dateAnchor.toString(),
-                fontSize = 15.sp,
-                color= Color.Gray
-            )
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ){
+                Text(
+                    text= "Due " + subscription.dateAnchor.toString(),
+                    fontSize = 15.sp,
+                    color= Color.Gray,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
+                )
+            }
+
         }
     }
 }
