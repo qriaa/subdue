@@ -22,7 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,12 +73,12 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription)
                 )
         }
 
-        Spacer(modifier = Modifier.fillMaxWidth(0.04f))
+        Spacer(modifier = Modifier.width(5.dp))
 
         Box(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier
-                .fillMaxWidth(fraction = 0.4f)
+                .fillMaxWidth(0.4f)
                 .fillMaxHeight()
         )
         {
@@ -87,55 +89,60 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription)
             )
         }
 
-        Box(
-            contentAlignment = Alignment.CenterStart
-        ) {
-            if (isNearPayment){
-                Icon(
-                    painter = painterResource(id = R.drawable.alert),
-                    contentDescription = "warning icon",
-                    modifier = Modifier
-                        .fillMaxWidth(0.2f)
-                        .fillMaxHeight()
-                )
-            }
+        Spacer(modifier = Modifier.weight(1f))
 
-            Column(
+        if (isNearPayment) {
+            Icon(
+                painter = painterResource(id = R.drawable.alert),
+                contentDescription = "warning icon",
                 modifier = Modifier
+                    .fillMaxWidth(0.2f)
                     .fillMaxHeight()
-                    .fillMaxWidth()
-            ){
-                Spacer(modifier = Modifier.height(18.dp))
-                Text(
-                    text = subscription.cost.toFloat().toString() + " " + subscription.currency, //#TODO bigdecimal do zaokraglenia
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text(
-                    text= "/ ${subscription.timeInterval}",
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Box(
-                    contentAlignment = Alignment.BottomCenter,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                ){
-                    Text(
-                        text= "Due " + subscription.dateAnchor.toString(),
-                        fontSize = 15.sp,
-                        color= Color.Gray,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .fillMaxWidth()
-                    )
-                }
+            )
+        } else {
+            Spacer(modifier = Modifier
+                .fillMaxWidth(0.2f)
+                .fillMaxHeight())
+        }
 
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+        ){
+            Spacer(modifier = Modifier.height(18.dp))
+            Text(
+                text = subscription.cost.toFloat().toString() + " " + subscription.currency, //#TODO bigdecimal do zaokraglenia
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text= "/ ${subscription.timeInterval}",
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ){
+                Text(
+                    text= "Due " + subscription.dateAnchor.toString(),
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        color = if(isNearPayment) Color.Black else Color.Gray,
+                        textDecoration = if(isNearPayment) TextDecoration.Underline else null
+                    ),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
+                )
             }
+
         }
 
     }
