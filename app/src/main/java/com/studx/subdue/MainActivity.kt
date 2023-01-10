@@ -18,10 +18,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.studx.subdue.logic.SubLogic
 import com.studx.subdue.logic.Subscription
+import java.time.temporal.ChronoUnit
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.studx.subdue.ui.SubscriptionDetails
 import com.studx.subdue.ui.theme.SubdueTheme
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
+import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 
 sealed class Screen(val route: String) {
     object Home : Screen(route = "home_screen")
@@ -36,14 +40,34 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val workManager = WorkManager.getInstance(applicationContext)
+        val work = PeriodicWorkRequestBuilder<PaymentReminder>(
+            15,
+            TimeUnit.SECONDS
+        ) //minimalny czas to 15minut
+            //  .setInitialDelay(calculateTimeDifference(8), TimeUnit.SECONDS) //
+            .build()
         var darkMode by mutableStateOf(false)
-
+        workManager.enqueueUniquePeriodicWork(
+            "Subscription due reminder",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            work
+        )
         setContent {
             SubdueTheme(darkTheme = darkMode || isSystemInDarkTheme()) {
                 val navController = rememberNavController()
                 SetUpNavGraph(this, navController = navController)
             }
         }
+    }
+
+    fun calculateTimeDifference(hourOfReminder: Int): Long {
+        val currentTime = LocalDateTime.now()
+        val hoursInSeconds = currentTime.hour * 3600
+        val minutesInSeconds = currentTime.minute * 60
+        val totalTimeInSeconds = hoursInSeconds + minutesInSeconds + currentTime.second
+        val waitTime = (86400 - (totalTimeInSeconds - hourOfReminder * 3600)) % 86400
+        return waitTime.toLong()
     }
 }
 
