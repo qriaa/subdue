@@ -95,6 +95,7 @@ object SubLogic {
         subList.clear()
     }
 
+    //#TODO codzienny update listy subskrypcji
     // Utility
     fun updatePayment(sub: Subscription){
         if(sub.isOneOff){

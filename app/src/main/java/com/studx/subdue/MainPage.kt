@@ -1,6 +1,8 @@
 package com.studx.subdue
 
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,14 +20,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.studx.subdue.logic.SubLogic
+import com.studx.subdue.logic.Subscription
+import java.time.temporal.ChronoUnit
 
 const val ROW_HEIGHT = 90
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPage(subscriptions: List<Subscription>, navController: NavHostController) {
+fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, navController: NavHostController) {
     Scaffold(
         topBar = {
             TopBar(navController)
@@ -53,8 +59,17 @@ fun MainPage(subscriptions: List<Subscription>, navController: NavHostController
                 contentPadding = innerPadding,
                 verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
-                items(subscriptions.sortedBy { subscription -> subscription.dueTo }) { sub ->
-                    Subscription(rowHeight = ROW_HEIGHT, rowColor = MaterialTheme.colorScheme.primaryContainer, subscription = sub)
+                items(subscriptions.sortedBy { subscription -> subscription.dateAnchor }) { sub ->
+                    Surface(onClick = {
+                        navController.navigate(Screen.SubscriptionDetails.createRoute(sub.name))
+                        Toast.makeText(
+                            currContext,
+                            "Clicked on ${sub.name}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }) {
+                        SubscriptionBox(rowHeight = ROW_HEIGHT, rowColor = MaterialTheme.colorScheme.primaryContainer, subscription = sub)
+                    }
                 }
             }
         }
@@ -71,15 +86,13 @@ fun PreviewTopAppBar() {
 fun BottomBar() {
     val selectedIndex = remember { mutableStateOf(0) }
     NavigationBar {
-
+        val (alreadyPaid, sumOfPayments)  = SubLogic.calculatePaymentsSum(ChronoUnit.MONTHS)
         NavigationBarItem(icon = {
-            Icon(imageVector = Icons.Outlined.KeyboardArrowUp,"")
+            Icon(imageVector = Icons.Outlined.KeyboardArrowUp,"Payments summary")
         },
-            label = { Text(text = "MONTHLY", fontSize = 13.sp) },
-            selected = (selectedIndex.value == 0),
-            onClick = {
-                selectedIndex.value = 0
-            })
+            label = { Text(text = "MONTHLY " + alreadyPaid + " / " + sumOfPayments, fontSize = 13.sp) },
+            selected = selectedIndex.value == 0,
+            onClick = { /* do sth */ })
     }
 }
 
