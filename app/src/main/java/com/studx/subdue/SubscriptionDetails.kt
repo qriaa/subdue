@@ -1,6 +1,7 @@
 package com.studx.subdue.ui
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,10 +17,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.material3.R
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,16 +31,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.studx.subdue.*
+import com.studx.subdue.logic.SubLogic
 import com.studx.subdue.logic.Subscription
 import kotlin.math.round
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubscriptionDetails(navController: NavController, subscription: Subscription?) {
+fun SubscriptionDetails(navController: NavController, subscriptionId: String) {
+    val subscription = SubLogic.getSubList().find { it.id == subscriptionId } ?: Subscription( name = "a", image = "a", isEmojiImg = false)
+    if (subscription == null) {
+        Toast.makeText(LocalContext.current, "Subscription not found", Toast.LENGTH_SHORT).show()
+    }
     Scaffold(
         topBar = {
-            SubscriptionDetailsTopBar(navController)
+            SubscriptionDetailsTopBar(navController, subscription)
         },
         bottomBar = {},
         content = { innerPadding ->
@@ -202,7 +210,8 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubscriptionDetailsTopBar(navController: NavController) {
+fun SubscriptionDetailsTopBar(navController: NavController, subscription: Subscription) {
+    val context = LocalContext.current
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -215,7 +224,7 @@ fun SubscriptionDetailsTopBar(navController: NavController) {
             IconButton(onClick = {
                 navController.navigate(Screen.Home.route) {
                     popUpTo(Screen.Home.route) {
-                        inclusive = true
+                        inclusive = false
                     }
                 }
             }) {
@@ -227,10 +236,11 @@ fun SubscriptionDetailsTopBar(navController: NavController) {
         },
         actions = {
             IconButton(onClick = {
-
+                SubLogic.removeSub(subscription)
+                SubLogic.saveSubs(context)
                 navController.navigate(Screen.Home.route) {
                     popUpTo(Screen.Home.route) {
-                        inclusive = true
+                        inclusive = false
                     }
                 }
             }) {

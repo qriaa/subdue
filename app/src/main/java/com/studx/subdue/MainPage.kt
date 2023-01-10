@@ -3,6 +3,7 @@ package com.studx.subdue
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,7 +37,8 @@ const val ROW_HEIGHT = 110
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, navController: NavHostController) {
+fun MainPage(navController: NavHostController) {
+    val subscriptions = SubLogic.getSubList()
     Scaffold(
         topBar = {
             TopBar(navController)
@@ -65,15 +67,20 @@ fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, nav
                 verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 items(subscriptions.sortedBy { subscription -> subscription.dateAnchor }) { sub ->
-                    Surface(
-                        onClick = {
-                        navController.navigate(Screen.SubscriptionDetails.createRoute(sub.id))
-                    }) {
-                        SubscriptionBox(rowHeight = ROW_HEIGHT, rowColor = MaterialTheme.colorScheme.primaryContainer, subscription = sub)
+                        SubscriptionBox(
+                            rowHeight = ROW_HEIGHT,
+                            rowColor = MaterialTheme.colorScheme.primaryContainer,
+                            subscription = sub,
+                            modifier = Modifier.clickable {
+                                navController.navigate("${Screen.SubscriptionDetails.route}/${sub.id}") {
+                                    launchSingleTop = true
+                                }
+                            }
+                        )
                     }
                 }
+
             }
-        }
     )
 }
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -47,10 +48,10 @@ import com.vanniktech.emoji.google.GoogleEmojiProvider
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddSubscription(navController: NavController, context: Context) {
+fun AddSubscription(navController: NavController) {
     Scaffold(
         topBar = {
-            AddTopBar(navController, context)
+            AddTopBar(navController)
         },
         bottomBar = {},
         content = { innerPadding ->
@@ -58,7 +59,7 @@ fun AddSubscription(navController: NavController, context: Context) {
                 contentPadding = innerPadding
             ) {
                 item {
-                    AddPage(context)
+                    AddPage()
                 }
             }
         }
@@ -68,7 +69,8 @@ fun AddSubscription(navController: NavController, context: Context) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTopBar(navController: NavController, context: Context) {
+fun AddTopBar(navController: NavController) {
+    val context = LocalContext.current
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -117,7 +119,7 @@ fun AddTopBar(navController: NavController, context: Context) {
 val newSubscription = Subscription(image = R.drawable.ic_launcher_foreground.toString(), isEmojiImg = false, name = "NEW SUB", isOneOff = true)
 
 @Composable
-fun AddPage(context: Context) {
+fun AddPage() {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()

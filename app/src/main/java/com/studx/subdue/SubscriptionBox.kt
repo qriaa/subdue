@@ -36,7 +36,7 @@ import java.time.temporal.ChronoUnit
 
 
 @Composable
-fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription){
+fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription, modifier: Modifier = Modifier){
     val isNearPayment: Boolean = remember {
         SubLogic.isNearPayment(
             subscription,
@@ -45,7 +45,7 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription)
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(rowHeight.dp)
             .clip(RoundedCornerShape(10.dp))
