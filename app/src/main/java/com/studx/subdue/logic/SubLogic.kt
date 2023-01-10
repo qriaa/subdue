@@ -11,11 +11,13 @@ import java.lang.reflect.Type
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.util.*
 
 
 /**
  * This class contains data about a subscription.
  *
+ * @property[id] ID of the subscription (UUID)
  * @property[name] Name of subscription
  * @property[notes] User's notes of subscription (Optional)
  * @property[paymentMethod] User's notes of their payment method (Optional)
@@ -36,6 +38,7 @@ import java.time.temporal.ChronoUnit
  * @property[isOneOff] if `true` - the subscription is an one-off; otherwise it is recurring
  */
 data class Subscription (
+    val id: String = UUID.randomUUID().toString(),
     var name: String,
     var notes: String = "",
     var paymentMethod: String = "",
@@ -56,6 +59,7 @@ data class Subscription (
         other as Subscription
 
         if(
+            id != other.id ||
             name != other.name ||
             notes != other.notes ||
             paymentMethod != other.paymentMethod ||
@@ -71,9 +75,67 @@ data class Subscription (
         return true
     }
 }
+
+/**
+ * This class contains settings for the app
+ *
+ * @property[isDarkmode] decides whether the app is in darkmode
+ * @property[sendNotifications] decides whether the app sends notifications
+ * @property[defaultCurrency] decides on which currency to use by default
+ * @property[daysBeforePaymentAlert] decides how early an alert is sent that a subscription payment
+ * is approaching (for instance, if it was 2, then the payment alert would be sent 2 days before
+ * the payment date)
+ */
+data class SubdueSettings (
+    var isDarkmode: Boolean = false,
+    var sendNotifications: Boolean = true,
+    var defaultCurrency: Currency = Currency.getInstance("PLN"),
+    var daysBeforePaymentAlert: Int = 2
+        )
+
+/**
+ * This singleton (`object`) manages settings.
+ */
+object SettingsManager {
+    var settings: SubdueSettings = SubdueSettings()
+
+    private const val settingsFilename: String = "SubdueCfg.json"
+
+    //Utility
+    fun revertToDefault() {
+        settings = SubdueSettings()
+    }
+
+    //Persistence
+    fun saveSettings(context: Context) {
+        val gsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(Currency::class.java, CurrencySerializer())
+        val gson: Gson = gsonBuilder.create()
+        val outputJSON: String = gson.toJson(settings)
+        val file = File(context.filesDir, settingsFilename)
+        if (!file.exists()) {
+            file.createNewFile()
+            file.setReadable(true)
+            file.setWritable(true)
+        }
+        file.writeText(outputJSON)
+    }
+
+    fun loadSettings(context: Context) {
+        val gsonBuilder = GsonBuilder()
+        gsonBuilder.registerTypeAdapter(Currency::class.java, CurrencyDeserializer())
+        val gson: Gson = gsonBuilder.create()
+        val file = File(context.filesDir, settingsFilename)
+        if (!file.exists()) {
+            return
+        }
+        val jsonText = file.readText()
+        this.settings = gson.fromJson(jsonText, SubdueSettings::class.java)
+    }
+}
+
 /**
  * This singleton (`object`) manages logic.
- *
  */
 object SubLogic {
     private var subList: MutableList<Subscription> = mutableListOf()
