@@ -3,6 +3,7 @@ package com.studx.subdue
 import android.app.Activity
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -16,30 +17,37 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.studx.subdue.logic.SettingsManager
+import com.studx.subdue.ui.theme.SubdueTheme
 
 //const? podsumowujac: ???
 const val DEFAULT_CURRENCY = "PLN"
 const val PAYMENT_DUE_ALERT = "1"
 const val DARK_MODE = false
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Settings(navController: NavController) {
-    Scaffold(
-        topBar = {
-            SettingsTopBar(navController)
-        },
-        bottomBar = {},
-        content = { innerPadding ->
-            LazyColumn(
-                contentPadding = innerPadding
-            ) {
-                item {
-                    SettingsPage()
+fun Settings(navController: NavController, context: Context) {
+    SubdueTheme(
+        darkTheme = SettingsManager.settings.isDarkmode
+    ) {
+        Scaffold(
+            topBar = {
+                SettingsTopBar(navController)
+            },
+            bottomBar = {},
+            content = { innerPadding ->
+                LazyColumn(
+                    contentPadding = innerPadding
+                ) {
+                    item {
+                        SettingsPage(context)
+                    }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 //@Preview
@@ -85,7 +93,7 @@ fun SettingsTopBar(navController: NavController) {
 }
 
 @Composable
-fun SettingsPage() {
+fun SettingsPage(context: Context) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -103,7 +111,7 @@ fun SettingsPage() {
                 )
             }
             Column() {
-                SwitchModeButton()
+                SwitchModeButton(context)
             }
         }
 
@@ -173,15 +181,19 @@ fun PaymentDueAlertInput() {
 }
 
 @Composable
-fun SwitchModeButton() {
+fun SwitchModeButton(context: Context){
     var checkedState = remember {
-        mutableStateOf(false)
+        mutableStateOf(SettingsManager.settings.isDarkmode)
     }
 
     Switch(
         checked = checkedState.value,
         onCheckedChange = {
-            checkedState.value = it
+            SettingsManager.loadSettings(context)
+            SettingsManager.settings.isDarkmode = !SettingsManager.settings.isDarkmode
+            SettingsManager.saveSettings(context)
+            SettingsManager.loadSettings(context)
+            checkedState.value = SettingsManager.settings.isDarkmode
         }
     )
 }

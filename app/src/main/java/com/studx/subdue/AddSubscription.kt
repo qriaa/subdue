@@ -3,7 +3,6 @@ package com.studx.subdue
 import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.math.BigDecimal
-import android.view.View
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,14 +22,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import com.studx.subdue.logic.SettingsManager
 import com.studx.subdue.logic.SubLogic
 import com.studx.subdue.logic.Subscription
-import com.vanniktech.emoji.EmojiPopup
+import com.studx.subdue.ui.theme.SubdueTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -39,15 +38,15 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
-import com.vanniktech.emoji.EmojiManager
-import com.vanniktech.emoji.google.GoogleEmojiProvider
-
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddSubscription(navController: NavController, context: Context) {
+    SubdueTheme(
+        darkTheme = SettingsManager.settings.isDarkmode
+    ){
     Scaffold(
         topBar = {
             AddTopBar(navController, context)
@@ -62,7 +61,7 @@ fun AddSubscription(navController: NavController, context: Context) {
                 }
             }
         }
-    )
+    )}
 }
 
 

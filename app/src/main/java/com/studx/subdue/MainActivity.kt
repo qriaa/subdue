@@ -1,5 +1,6 @@
 package com.studx.subdue
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
@@ -14,16 +15,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.studx.subdue.logic.SubLogic
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.studx.subdue.logic.Subscription
-import com.studx.subdue.logic.DateUpdateWorker
+import com.studx.subdue.logic.*
 import com.studx.subdue.ui.SubscriptionDetails
 import com.studx.subdue.ui.theme.SubdueTheme
-import com.vanniktech.emoji.EmojiManager
-import com.vanniktech.emoji.google.GoogleEmojiProvider
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
@@ -37,6 +34,7 @@ sealed class Screen(val route: String) {
 }
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnrememberedMutableState")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        EmojiManager.install(GoogleEmojiProvider())
@@ -55,7 +53,8 @@ class MainActivity : ComponentActivity() {
             //  .setInitialDelay(calculateTimeDifference(8), TimeUnit.SECONDS) //
             .build()
         // minimalny interwal pomiedzy wykonaniami workera to 15 minut
-
+        
+        SettingsManager.loadSettings(this)
         workManager.enqueueUniquePeriodicWork(
             "Subscription notification work",
             ExistingPeriodicWorkPolicy.REPLACE,
@@ -69,7 +68,7 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
-            SubdueTheme() {
+            SubdueTheme(darkTheme = SettingsManager.settings.isDarkmode) {
                 SubLogic.loadSubs(this)
                 val subscriptions = SubLogic.getSubList()
                 val navController = rememberNavController()
@@ -99,7 +98,7 @@ fun SetUpNavGraph(context: Context, navController: NavHostController, subscripti
             AddSubscription(navController, context)
         }
         composable(Screen.Settings.route) {
-            Settings(navController)
+            Settings(navController, context)
         }
         //TODO bez ID subskrypcji nie da się przejść do szczegółów
         composable(Screen.SubscriptionDetails.route) { navBackStackEntry ->
