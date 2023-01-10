@@ -28,30 +28,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.studx.subdue.*
+import com.studx.subdue.logic.SettingsManager
 import com.studx.subdue.logic.Subscription
+import com.studx.subdue.ui.theme.SubdueTheme
 import kotlin.math.round
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubscriptionDetails(navController: NavController, subscription: Subscription?) {
-    Scaffold(
-        topBar = {
-            SubscriptionDetailsTopBar(navController)
-        },
-        bottomBar = {},
-        content = { innerPadding ->
-            LazyColumn(
-                contentPadding = innerPadding
-            ) {
-                item {
-                    if (subscription != null) {
-                        SubscriptionDetailsPage(subscription)
+    SubdueTheme(
+        darkTheme = SettingsManager.settings.isDarkmode
+    ) {
+        Scaffold(
+            topBar = {
+                SubscriptionDetailsTopBar(navController)
+            },
+            bottomBar = {},
+            content = { innerPadding ->
+                LazyColumn(
+                    contentPadding = innerPadding
+                ) {
+                    item {
+                        if (subscription != null) {
+                            SubscriptionDetailsPage(subscription)
+                        }
                     }
                 }
             }
-        }
-    )
+        )
+    }
 }
 
 @Preview
