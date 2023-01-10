@@ -9,11 +9,18 @@ import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
+/**
+ * Class that creates notification
+ * @property[context] current context
+ */
 
 class PaymentNotification(val context: Context) {
     private val CHANNEL_ID = "channel1"
     private val NOTIFICATION_ID = 1
 
+    /**
+     * Method that creates notification channel require to make notifications
+     */
     private fun createNotificationChannel() {
         val channel =
             NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
@@ -25,6 +32,11 @@ class PaymentNotification(val context: Context) {
         notificationManager.createNotificationChannel(channel)
     }
 
+    /**
+     * Method that creates notification
+     * @param[title] Title of notification
+     * @param[message] Content of notification
+     */
     fun createNotification(title: String, message: String) {
         createNotificationChannel()
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -49,7 +61,6 @@ class PaymentNotification(val context: Context) {
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
-        // 6
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
 
     }

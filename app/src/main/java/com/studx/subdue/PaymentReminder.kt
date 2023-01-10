@@ -4,6 +4,11 @@ import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 
+/**
+ * A class implementing worker for managing notifications
+ * @property[ctx] current Context
+ * @property[params] @see[WorkerParameters]
+ */
 
 class PaymentReminder(val ctx: Context, val params: WorkerParameters) : Worker(ctx, params) {
     val title = "Tytul powiadomienia"
