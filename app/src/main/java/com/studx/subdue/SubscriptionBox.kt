@@ -43,7 +43,7 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription)
         }
         else {
             Image(
-                painter = painterResource(R.drawable.netflix_logo),  //#TODO przypisac odpowiedni zasob z res/drawable do wyswietlenia
+                painter = painterResource(R.drawable.recurring_subscription_icon),  //#TODO przypisac odpowiedni zasob z res/drawable do wyswietlenia
                 contentDescription = "Subscription icon",
                 modifier = Modifier
                     .size(90.dp)

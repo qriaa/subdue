@@ -1,8 +1,6 @@
 package com.studx.subdue
 
 import android.content.Context
-import android.icu.math.BigDecimal
-import android.icu.util.Currency
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -17,14 +15,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.studx.subdue.logic.SubLogic
-import com.studx.subdue.logic.Subscription
-import java.time.temporal.ChronoUnit
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.studx.subdue.logic.Subscription
 import com.studx.subdue.logic.DateUpdateWorker
 import com.studx.subdue.ui.SubscriptionDetails
 import com.studx.subdue.ui.theme.SubdueTheme
+import com.vanniktech.emoji.EmojiManager
+import com.vanniktech.emoji.google.GoogleEmojiProvider
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
@@ -33,13 +32,14 @@ sealed class Screen(val route: String) {
     object AddSub : Screen(route = "add_sub_screen")
     object Settings : Screen(route = "settings_screen")
     object SubscriptionDetails : Screen(route = "details_screen/{subscriptionId}") {
-        fun createRoute(subscriptionId: String) = "details_screen/$subscriptionId"
+        fun createRoute(subscriptionId: String?) = "details_screen/$subscriptionId"
     }
 }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+//        EmojiManager.install(GoogleEmojiProvider())
 
         val workManager = WorkManager.getInstance(applicationContext)
         val workNotifications = PeriodicWorkRequestBuilder<PaymentReminder>(
@@ -68,8 +68,10 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             SubdueTheme(darkTheme = darkMode || isSystemInDarkTheme()) {
+                SubLogic.loadSubs(this)
+                val subscriptions = SubLogic.getSubList()
                 val navController = rememberNavController()
-                SetUpNavGraph(this, navController = navController)
+                SetUpNavGraph(this, navController = navController, subscriptions)
             }
         }
     }
@@ -85,12 +87,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SetUpNavGraph(context: Context, navController: NavHostController) {
+fun SetUpNavGraph(context: Context, navController: NavHostController, subscriptions: MutableList<Subscription>) {
     NavHost(navController = navController, startDestination = "home_screen") {
         composable(Screen.Home.route) {
             //#TODO wczytaj subskrypcje z bazy danych i przekaz do mainpage
-            SubLogic.loadSubs(context)
-            val subscriptions = SubLogic.getSubList()
             MainPage(context, subscriptions, navController)
         }
         composable(Screen.AddSub.route) {
@@ -101,13 +101,13 @@ fun SetUpNavGraph(context: Context, navController: NavHostController) {
         }
         //TODO bez ID subskrypcji nie da się przejść do szczegółów
         composable(Screen.SubscriptionDetails.route) { navBackStackEntry ->
-            val subscriptionName = navBackStackEntry.arguments?.getString("subscriptionName")
-                val subToShowDetails = SubLogic.getSubList().find { sub -> sub.name == subscriptionName }
-                if (subToShowDetails != null) {
-                    SubscriptionDetails(navController, subToShowDetails)
-                } else {
-                    Toast.makeText(context, "Subscription not found", Toast.LENGTH_SHORT).show()
-                }
+            val subToShowDetails = navBackStackEntry.arguments?.getString("subscriptionId")
+            val subToShow = subscriptions.find { it.id == subToShowDetails }
+            if (subToShow != null) {
+                SubscriptionDetails(navController, subToShow)
+            } else {
+                Toast.makeText(context, "Subscription not found", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

@@ -34,7 +34,7 @@ import kotlin.math.round
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubscriptionDetails(navController: NavController, subscription: Subscription) {
+fun SubscriptionDetails(navController: NavController, subscription: Subscription?) {
     Scaffold(
         topBar = {
             SubscriptionDetailsTopBar(navController)
@@ -45,7 +45,9 @@ fun SubscriptionDetails(navController: NavController, subscription: Subscription
                 contentPadding = innerPadding
             ) {
                 item {
-                    SubscriptionDetailsPage(subscription)
+                    if (subscription != null) {
+                        SubscriptionDetailsPage(subscription)
+                    }
                 }
             }
         }
@@ -77,14 +79,14 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
             )
         }
         else {
-            Image(
-                painter = painterResource(subscription.image.toInt()),  //#TODO przypisac odpowiedni zasob z res/drawable do wyswietlenia
-                contentDescription = "Subscription icon",
-                modifier = Modifier
-                    .size(100.dp)
-                    .background(Color.White)
-                    .clip(CircleShape),
-            )
+//            Image(
+//                painter = painterResource(subscription.image.toInt()),  //#TODO przypisac odpowiedni zasob z res/drawable do wyswietlenia
+//                contentDescription = "Subscription icon",
+//                modifier = Modifier
+//                    .size(100.dp)
+//                    .background(Color.White)
+//                    .clip(CircleShape),
+//            )
         }
 
         Text(
