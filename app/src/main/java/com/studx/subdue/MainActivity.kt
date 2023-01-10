@@ -22,6 +22,7 @@ import java.time.temporal.ChronoUnit
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.studx.subdue.logic.DateUpdateWorker
 import com.studx.subdue.ui.SubscriptionDetails
 import com.studx.subdue.ui.theme.SubdueTheme
 import java.time.LocalDateTime
@@ -41,17 +42,29 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val workManager = WorkManager.getInstance(applicationContext)
-        val work = PeriodicWorkRequestBuilder<PaymentReminder>(
+        val workNotifications = PeriodicWorkRequestBuilder<PaymentReminder>(
             15,
             TimeUnit.SECONDS
-        ) //minimalny czas to 15minut
+        )
             //  .setInitialDelay(calculateTimeDifference(8), TimeUnit.SECONDS) //
             .build()
+        val workUpdateJSON = PeriodicWorkRequestBuilder<DateUpdateWorker>(
+            15,
+            TimeUnit.SECONDS
+        )
+            //  .setInitialDelay(calculateTimeDifference(8), TimeUnit.SECONDS) //
+            .build()
+        // minimalny interwal pomiedzy wykonaniami workera to 15 minut
         var darkMode by mutableStateOf(false)
         workManager.enqueueUniquePeriodicWork(
-            "Subscription due reminder",
+            "Subscription notification work",
             ExistingPeriodicWorkPolicy.REPLACE,
-            work
+            workNotifications
+        )
+        workManager.enqueueUniquePeriodicWork(
+            "Update subscriptions dates work",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            workUpdateJSON
         )
         setContent {
             SubdueTheme(darkTheme = darkMode || isSystemInDarkTheme()) {
