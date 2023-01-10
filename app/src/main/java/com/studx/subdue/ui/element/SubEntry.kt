@@ -1,8 +1,10 @@
 package com.studx.subdue.ui.element
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -10,6 +12,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.studx.subdue.R
+import com.studx.subdue.logic.SettingsManager
 import com.studx.subdue.ui.theme.SubdueTheme
 
 @Composable
@@ -33,10 +36,11 @@ fun SubEntry(){ // TODO: add subscription data as argument
 
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Preview (showBackground = true)
 @Composable
 fun SubEntryPreview(){
-    SubdueTheme {
+    SubdueTheme(darkTheme = SettingsManager.settings.isDarkmode) {
         SubEntry()
     }
 }
