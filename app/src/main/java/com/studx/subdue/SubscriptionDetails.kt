@@ -34,10 +34,10 @@ import kotlin.math.round
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubscriptionDetails(/*navController: NavController,*/ subscription: Subscription) {
+fun SubscriptionDetails(navController: NavController, subscription: Subscription) {
     Scaffold(
         topBar = {
-            SubscriptionDetailsTopBar(/*navController*/)
+            SubscriptionDetailsTopBar(navController)
         },
         bottomBar = {},
         content = { innerPadding ->
@@ -162,45 +162,45 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
             )
         }
 
-//        OutlinedTextField(value = subscription.paymentMethod, onValueChange = {},
-//            label = { Text("Payment method", Modifier.background(color = Color.White)) },
-//            modifier = Modifier
-//                .padding(10.dp, 0.dp),
-//            enabled = false,
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = MaterialTheme.colorScheme.primary,
-//                unfocusedBorderColor = MaterialTheme.colorScheme.primary,
-//                disabledBorderColor = MaterialTheme.colorScheme.primary,
-//                disabledLabelColor = MaterialTheme.colorScheme.primary,
-//                disabledTextColor = MaterialTheme.colorScheme.primary,
-//                focusedLabelColor = MaterialTheme.colorScheme.primary,
-//                unfocusedLabelColor = MaterialTheme.colorScheme.primary,
-//                textColor = Color.Black,
-//            )
-//        )
+        OutlinedTextField(value = subscription.paymentMethod, onValueChange = {},
+            label = { Text("Payment method", Modifier.background(color = Color.White)) },
+            modifier = Modifier
+                .padding(10.dp, 0.dp),
+            enabled = false,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                disabledBorderColor = MaterialTheme.colorScheme.primary,
+                disabledLabelColor = MaterialTheme.colorScheme.primary,
+                disabledTextColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                textColor = Color.Black,
+            )
+        )
 
-//        OutlinedTextField(value = subscription.notes, onValueChange = {},
-//            label = { Text("Notes", Modifier.background(color = Color.White)) },
-//            modifier = Modifier
-//                .padding(10.dp, 0.dp),
-//            enabled = false,
-//            colors = TextFieldDefaults.outlinedTextFieldColors(
-//                focusedBorderColor = MaterialTheme.colorScheme.primary,
-//                unfocusedBorderColor = MaterialTheme.colorScheme.primary,
-//                disabledBorderColor = MaterialTheme.colorScheme.primary,
-//                disabledLabelColor = MaterialTheme.colorScheme.primary,
-//                disabledTextColor = MaterialTheme.colorScheme.primary,
-//                focusedLabelColor = MaterialTheme.colorScheme.primary,
-//                unfocusedLabelColor = MaterialTheme.colorScheme.primary,
-//                textColor = Color.Black,
-//            )
-//        )
+        OutlinedTextField(value = subscription.notes, onValueChange = {},
+            label = { Text("Notes", Modifier.background(color = Color.White)) },
+            modifier = Modifier
+                .padding(10.dp, 0.dp),
+            enabled = false,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.primary,
+                disabledBorderColor = MaterialTheme.colorScheme.primary,
+                disabledLabelColor = MaterialTheme.colorScheme.primary,
+                disabledTextColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.primary,
+                textColor = Color.Black,
+            )
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SubscriptionDetailsTopBar(/*navController: NavController*/) {
+fun SubscriptionDetailsTopBar(navController: NavController) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -211,11 +211,11 @@ fun SubscriptionDetailsTopBar(/*navController: NavController*/) {
         },
         navigationIcon = {
             IconButton(onClick = {
-//                navController.navigate(Screen.Home.route) {
-//                    popUpTo(Screen.Home.route) {
-//                        inclusive = true
-//                    }
-//                }
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Home.route) {
+                        inclusive = true
+                    }
+                }
             }) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
@@ -225,12 +225,12 @@ fun SubscriptionDetailsTopBar(/*navController: NavController*/) {
         },
         actions = {
             IconButton(onClick = {
-//                subscriptions.remove(subscription)
-//                navController.navigate(Screen.Home.route) {
-//                    popUpTo(Screen.Home.route) {
-//                        inclusive = true
-//                    }
-//                }
+
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Home.route) {
+                        inclusive = true
+                    }
+                }
             }) {
                 Icon(
                     imageVector = Icons.Filled.Delete,

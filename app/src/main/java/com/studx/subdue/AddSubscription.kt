@@ -1,7 +1,9 @@
 package com.studx.subdue
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.icu.math.BigDecimal
+import androidx.annotation.Nullable
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import com.studx.subdue.logic.SubLogic
 import com.studx.subdue.logic.Subscription
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -41,10 +44,10 @@ import java.util.*
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddSubscription(navController: NavController) {
+fun AddSubscription(navController: NavController, context: Context) {
     Scaffold(
         topBar = {
-            AddTopBar(navController)
+            AddTopBar(navController, context)
         },
         bottomBar = {},
         content = { innerPadding ->
@@ -62,7 +65,7 @@ fun AddSubscription(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTopBar(navController: NavController) {
+fun AddTopBar(navController: NavController, context: Context) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -88,7 +91,31 @@ fun AddTopBar(navController: NavController) {
         //#TODO zapis subskrypcji do bazy
         actions = {
             IconButton(onClick = {
-//                SubLogic.addSub(Subscription())
+                /*
+                var name: String,
+                var notes: String = "",
+                var paymentMethod: String = "",
+                var image: String,
+                var isEmojiImg: Boolean,
+                var cost: BigDecimal = BigDecimal(0),
+                var currency: Currency = Currency.getInstance("PLN"),
+                var timeMultiplier: Long = 0,
+                var timeInterval: ChronoUnit = ChronoUnit.MONTHS,
+                var dateAnchor: LocalDate = LocalDate.now(),
+                var isOneOff: Boolean = true
+                */
+                if (!newSubscription.isOneOff) {
+                    newSubscription.dateAnchor = LocalDate.now().plus(newSubscription.timeMultiplier, newSubscription.timeInterval)
+                }
+                newSubscription.image = "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                newSubscription.isEmojiImg = false // #TODO dodac obsluge emoji
+                SubLogic.addSub(newSubscription)
+                SubLogic.saveSubs(context)
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Home.route) {
+                        inclusive = true
+                    }
+                }
             }) {
                 Icon(
                     imageVector = Icons.Filled.Check,
@@ -249,8 +276,6 @@ fun RecurringDetails() {
                 billing_period_number = "1"
             }
             newSubscription.timeMultiplier = billing_period_number.toLong()
-
-            // change into list (month/year)
 
             var expanded by remember {
                 mutableStateOf(false)

@@ -4,6 +4,7 @@ import android.content.Context
 import android.icu.math.BigDecimal
 import android.icu.util.Currency
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -17,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.studx.subdue.logic.SubLogic
 import com.studx.subdue.logic.Subscription
+import com.studx.subdue.ui.SubscriptionDetails
 import com.studx.subdue.ui.theme.SubdueTheme
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -26,7 +28,7 @@ sealed class Screen(val route: String) {
     object AddSub : Screen(route = "add_sub_screen")
     object Settings : Screen(route = "settings_screen")
     object SubscriptionDetails : Screen(route = "details_screen/{subscriptionId}") {
-        fun createRoute(subscriptionId: Int) = "details_screen/$subscriptionId"
+        fun createRoute(subscriptionId: String) = "details_screen/$subscriptionId"
     }
 }
 
@@ -55,15 +57,20 @@ fun SetUpNavGraph(context: Context, navController: NavHostController) {
             MainPage(context, subscriptions, navController)
         }
         composable(Screen.AddSub.route) {
-            AddSubscription(navController)
+            AddSubscription(navController, context)
         }
         composable(Screen.Settings.route) {
             Settings(navController)
         }
-        composable(Screen.SubscriptionDetails.route) {
-//            navBackStackEntry ->
-//            val subscription = navBackStackEntry.arguments.get //get what?
-//            SubscriptionDetails(subscription = subscription)
+        //TODO bez ID subskrypcji nie da się przejść do szczegółów
+        composable(Screen.SubscriptionDetails.route) { navBackStackEntry ->
+            val subscriptionName = navBackStackEntry.arguments?.getString("subscriptionName")
+                val subToShowDetails = SubLogic.getSubList().find { sub -> sub.name == subscriptionName }
+                if (subToShowDetails != null) {
+                    SubscriptionDetails(navController, subToShowDetails)
+                } else {
+                    Toast.makeText(context, "Subscription not found", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 }

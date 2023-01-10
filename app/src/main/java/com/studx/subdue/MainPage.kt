@@ -61,7 +61,7 @@ fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, nav
             ) {
                 items(subscriptions.sortedBy { subscription -> subscription.dateAnchor }) { sub ->
                     Surface(onClick = {
-//                        navController.navigate(Screen.SubscriptionDetails.route)
+                        navController.navigate(Screen.SubscriptionDetails.createRoute(sub.name))
                         Toast.makeText(
                             currContext,
                             "Clicked on ${sub.name}",
