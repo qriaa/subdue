@@ -76,6 +76,16 @@ data class Subscription (
     }
 }
 
+/**
+ * This class contains settings for the app
+ *
+ * @property[isDarkmode] decides whether the app is in darkmode
+ * @property[sendNotifications] decides whether the app sends notifications
+ * @property[defaultCurrency] decides on which currency to use by default
+ * @property[daysBeforePaymentAlert] decides how early an alert is sent that a subscription payment
+ * is approaching (for instance, if it was 2, then the payment alert would be sent 2 days before
+ * the payment date)
+ */
 data class SubdueSettings (
     var isDarkmode: Boolean = false,
     var sendNotifications: Boolean = true,
@@ -84,7 +94,7 @@ data class SubdueSettings (
         )
 
 /**
- * This singleton ('object') manages settings.
+ * This singleton (`object`) manages settings.
  */
 object SettingsManager {
     var settings: SubdueSettings = SubdueSettings()
