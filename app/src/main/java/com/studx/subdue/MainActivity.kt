@@ -1,8 +1,6 @@
 package com.studx.subdue
 
 import android.content.Context
-import android.icu.math.BigDecimal
-import android.icu.util.Currency
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -17,13 +15,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.studx.subdue.logic.SubLogic
-import com.studx.subdue.logic.Subscription
-import java.time.temporal.ChronoUnit
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.studx.subdue.ui.SubscriptionDetails
 import com.studx.subdue.ui.theme.SubdueTheme
+import com.vanniktech.emoji.EmojiManager
+import com.vanniktech.emoji.google.GoogleEmojiProvider
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
@@ -39,6 +37,7 @@ sealed class Screen(val route: String) {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EmojiManager.install(GoogleEmojiProvider())
 
         val workManager = WorkManager.getInstance(applicationContext)
         val work = PeriodicWorkRequestBuilder<PaymentReminder>(

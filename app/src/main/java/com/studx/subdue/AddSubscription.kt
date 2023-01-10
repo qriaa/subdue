@@ -3,7 +3,7 @@ package com.studx.subdue
 import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.math.BigDecimal
-import androidx.annotation.Nullable
+import android.view.View
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +30,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.studx.subdue.logic.SubLogic
 import com.studx.subdue.logic.Subscription
+import com.vanniktech.emoji.EmojiPopup
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -38,6 +39,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+import com.vanniktech.emoji.EmojiManager
+import com.vanniktech.emoji.google.GoogleEmojiProvider
 
 
 
@@ -55,7 +58,7 @@ fun AddSubscription(navController: NavController, context: Context) {
                 contentPadding = innerPadding
             ) {
                 item {
-                    AddPage()
+                    AddPage(context)
                 }
             }
         }
@@ -91,24 +94,11 @@ fun AddTopBar(navController: NavController, context: Context) {
         //#TODO zapis subskrypcji do bazy
         actions = {
             IconButton(onClick = {
-                /*
-                var name: String,
-                var notes: String = "",
-                var paymentMethod: String = "",
-                var image: String,
-                var isEmojiImg: Boolean,
-                var cost: BigDecimal = BigDecimal(0),
-                var currency: Currency = Currency.getInstance("PLN"),
-                var timeMultiplier: Long = 0,
-                var timeInterval: ChronoUnit = ChronoUnit.MONTHS,
-                var dateAnchor: LocalDate = LocalDate.now(),
-                var isOneOff: Boolean = true
-                */
                 if (!newSubscription.isOneOff) {
                     newSubscription.dateAnchor = LocalDate.now().plus(newSubscription.timeMultiplier, newSubscription.timeInterval)
                 }
-                newSubscription.image = "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                 newSubscription.isEmojiImg = false // #TODO dodac obsluge emoji
+                newSubscription.image = "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                 SubLogic.addSub(newSubscription)
                 SubLogic.saveSubs(context)
                 navController.navigate(Screen.Home.route) {
@@ -130,12 +120,13 @@ fun AddTopBar(navController: NavController, context: Context) {
 val newSubscription = Subscription(image = R.drawable.ic_launcher_foreground.toString(), isEmojiImg = false, name = "NEW SUB")
 
 @Composable
-fun AddPage() {
+fun AddPage(context: Context) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp, 0.dp)
     ) {
+
         Image(
             painter = painterResource(R.drawable.ic_launcher_foreground), //wybrac domyslny obrazek, wprowadzic mozliwosc dodawania emoji, gdy brak ikony w pamieci
             contentDescription = "Subscription image",
@@ -148,7 +139,9 @@ fun AddPage() {
                     enabled = true,
                     onClickLabel = "Clickable image",
                     onClick = {
-                        // onClick - dodawanie emoji?
+//                        val emojiPopup = EmojiPopup(View(context), EmojiInput()))
+//                        emojiPopup.toggle()
+//                        emojiPopup.dismiss()
                     }
                 )
         )
@@ -165,6 +158,20 @@ fun AddPage() {
         PaymentMethodInput("Payment method", "e.g. Card")
         NotesInput("Notes", "")
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EmojiInput() {
+    var emoji by remember { mutableStateOf("") }
+    TextField(
+        value = emoji,
+        onValueChange = { emoji = it },
+        label = { Text("Icon") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 10.dp)
+    )
 }
 
 @SuppressLint("SuspiciousIndentation")
@@ -357,28 +364,6 @@ fun DateDialog(specifed_value : String) {
 
     // w tym momencie dateAnchor ma wartosc pierwszej platnosci, nie wazne czy subek jest one-off czy recurring
     newSubscription.dateAnchor = pickedDate
-
-//    TextField(value = pickedDate,
-//        onValueChange = { newText ->
-//            pickedDate = formattedDate
-//        },
-//        label = {
-//            Text(text = "First payment")
-//        },
-//        trailingIcon = {
-//            IconButton(onClick = {
-//                date = ""
-//            }) {
-//                Icon(
-//                    imageVector = Icons.Filled.DateRange,
-//                    contentDescription = "Clear icon"
-//                )
-//            }
-//        },
-//        modifier = Modifier.padding(15.dp)
-//    )
-//    val date_picker = MaterialDatePicker.Builder.datePicker().build()
-//    date_picker.show(LocalContext.current, date_picker.toString())
 }
 
 @Composable
@@ -407,18 +392,6 @@ fun CurrencyList() {
     }
 
     newSubscription.currency = android.icu.util.Currency.getInstance(selectedItem.currencyCode)
-
-//    var text by remember { mutableStateOf(DEFAULT_CURRENCY) }
-//    OutlinedTextField(value = text,
-//        onValueChange = { newText ->
-//            text = newText
-//        },
-//        label = {
-//            Text(text = "")
-//        },
-//        modifier = Modifier
-//            .width(90.dp)
-//            .padding(3.dp))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -471,36 +444,6 @@ fun NameInput() {
     )
     newSubscription.name = text
 }
-
-// wychodzi na to, ze nie bedzie labeli
-//
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun LabelInput(label: String, placeholder: String) {
-//    var text by remember { mutableStateOf("") }
-//    TextField(value = text,
-//        onValueChange = { newText ->
-//            text = newText
-//        },
-//        label = {
-//            Text(text = label)
-//        },
-//        trailingIcon = {
-//            IconButton(onClick = {
-//                text = ""
-//            }) {
-//                Icon(
-//                    imageVector = Icons.Filled.Clear,
-//                    contentDescription = "Clear icon"
-//                )
-//            }
-//        },
-//        placeholder = {
-//            Text(text = placeholder)
-//        },
-//        modifier = Modifier.padding(15.dp)
-//    )
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -562,8 +505,8 @@ fun NotesInput(label: String, placeholder: String) {
     newSubscription.notes = text
 }
 
-@Preview
-@Composable
-fun PreviewAddSubsctiption() {
-    AddPage()
-}
+//@Preview
+//@Composable
+//fun PreviewAddSubsctiption(context: Context) {
+//    AddPage(context = context)
+//}
