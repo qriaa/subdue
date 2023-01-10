@@ -11,10 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.studx.subdue.logic.SubLogic
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -28,8 +32,12 @@ sealed class Screen(val route: String) {
     object Home : Screen(route = "home_screen")
     object AddSub : Screen(route = "add_sub_screen")
     object Settings : Screen(route = "settings_screen")
-    object SubscriptionDetails : Screen(route = "details_screen/{subscriptionId}") {
-        fun createRoute(subscriptionId: String?) = "details_screen/$subscriptionId"
+    object SubscriptionDetails : Screen(route = "details_screen") {
+        const val subIdArg = "sub_id_arg"
+        val routeWithArgs = "$route/{$subIdArg}"
+        val arguments = listOf(
+            navArgument(subIdArg) {type = NavType.StringType}
+        )
     }
 }
 
@@ -64,12 +72,11 @@ class MainActivity : ComponentActivity() {
             ExistingPeriodicWorkPolicy.REPLACE,
             workUpdateJSON
         )
+        SubLogic.loadSubs(this)
         setContent {
             SubdueTheme(darkTheme = SettingsManager.settings.isDarkmode) {
-                SubLogic.loadSubs(this)
-                val subscriptions = SubLogic.getSubList()
                 val navController = rememberNavController()
-                SetUpNavGraph(this, navController = navController, subscriptions)
+                SetUpNavGraph(navController = navController)
             }
         }
     }
@@ -85,26 +92,30 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SetUpNavGraph(context: Context, navController: NavHostController, subscriptions: MutableList<Subscription>) {
+fun SetUpNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home_screen") {
         composable(Screen.Home.route) {
             //#TODO wczytaj subskrypcje z bazy danych i przekaz do mainpage
-            MainPage(context, subscriptions, navController)
+            MainPage(navController)
         }
         composable(Screen.AddSub.route) {
-            AddSubscription(navController, context)
+            AddSubscription(navController)
         }
         composable(Screen.Settings.route) {
-            Settings(navController, context)
+            Settings(navController)
         }
         //TODO bez ID subskrypcji nie da się przejść do szczegółów
-        composable(Screen.SubscriptionDetails.route) { navBackStackEntry ->
-            val subToShowDetails = navBackStackEntry.arguments?.getString("subscriptionId")
-            val subToShow = subscriptions.find { it.id == subToShowDetails }
-            if (subToShow != null) {
-                SubscriptionDetails(navController, subToShow)
+        composable(
+            route = Screen.SubscriptionDetails.routeWithArgs,
+            arguments = Screen.SubscriptionDetails.arguments
+        ) { navBackStackEntry ->
+            val subToShowDetails =
+                navBackStackEntry.arguments?.getString(Screen.SubscriptionDetails.subIdArg)
+            if (subToShowDetails != null) {
+                SubscriptionDetails(navController, subToShowDetails)
             } else {
-                Toast.makeText(context, "Subscription not found", Toast.LENGTH_SHORT).show()
+                //DO NOT UNCOMMENT OR ELSE SUFFER
+                //Toast.makeText(LocalContext.current, "Subscription not found", Toast.LENGTH_SHORT).show()
             }
         }
     }

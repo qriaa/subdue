@@ -2,6 +2,7 @@ package com.studx.subdue
 
 
 import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,7 +34,8 @@ const val ROW_HEIGHT = 110
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, navController: NavHostController) {
+fun MainPage(navController: NavHostController) {
+    val subscriptions = SubLogic.getSubList()
     SubdueTheme(
         darkTheme = SettingsManager.settings.isDarkmode,
     ) {
@@ -44,7 +46,6 @@ fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, nav
             bottomBar = {
                 BottomBar()
             },
-
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
@@ -59,24 +60,22 @@ fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, nav
                 }
             },
             floatingActionButtonPosition = FabPosition.End,
-
             content = { innerPadding ->
                 LazyColumn(
                     contentPadding = innerPadding,
                     verticalArrangement = Arrangement.spacedBy(3.dp)
                 ) {
                     items(subscriptions.sortedBy { subscription -> subscription.dateAnchor }) { sub ->
-                        Surface(
-                            shape = RoundedCornerShape(20.dp),
-                            onClick = {
-                                navController.navigate(Screen.SubscriptionDetails.createRoute(sub.id))
-                            }) {
                             SubscriptionBox(
                                 rowHeight = ROW_HEIGHT,
                                 rowColor = MaterialTheme.colorScheme.primaryContainer,
-                                subscription = sub
+                                subscription = sub,
+                                modifier = Modifier.clickable {
+                                    navController.navigate("${Screen.SubscriptionDetails.route}/${sub.id}") {
+                                        launchSingleTop = true
+                                    }
+                                }
                             )
-                        }
                     }
                 }
             }
