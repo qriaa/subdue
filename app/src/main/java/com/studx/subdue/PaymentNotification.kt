@@ -11,12 +11,13 @@ import androidx.core.app.NotificationManagerCompat
 
 
 class PaymentNotification(val context: Context) {
-    private val CHANNEL_ID = "channel1"
+    private val CHANNEL_ID = "Subscription reminder"
     private val NOTIFICATION_ID = 1
 
     private fun createNotificationChannel() {
+
         val channel =
-            NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT)
+            NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_HIGH)
                 .apply {
                     description = "Reminder Channel Description"
                 }
