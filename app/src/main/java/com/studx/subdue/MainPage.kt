@@ -92,15 +92,38 @@ fun PreviewTopAppBar() {
 @Composable
 fun BottomBar() {
     val selectedIndex = remember { mutableStateOf(0) }
+    var expandedMenu = remember { mutableStateOf(false) }
+    var selectedTimeInterval = remember { mutableStateOf(ChronoUnit.MONTHS) }
+
     NavigationBar {
-        val (alreadyPaid, sumOfPayments)  = SubLogic.calculatePaymentsSum(ChronoUnit.MONTHS)
+        val (alreadyPaid, sumOfPayments)  = SubLogic.calculatePaymentsSum(selectedTimeInterval.value)
+        DropdownMenu(expanded = expandedMenu.value,
+            onDismissRequest = { expandedMenu.value = false }
+        ) {
+            DropdownMenuItem(
+                text = {Text("Yearly")},
+                onClick = { selectedTimeInterval.value = ChronoUnit.YEARS
+                    expandedMenu.value = false})
+            DropdownMenuItem(
+                text = {Text("Monthly")},
+                onClick = { selectedTimeInterval.value = ChronoUnit.MONTHS
+                    expandedMenu.value = false})
+            DropdownMenuItem(
+                text = {Text("Weekly")},
+                onClick = { selectedTimeInterval.value = ChronoUnit.WEEKS
+                    expandedMenu.value = false})
+        }
         NavigationBarItem(
             icon = {
-            Icon(imageVector = Icons.Outlined.ThumbUp,"Payments summary", Modifier.size(17.dp))
+            Icon(imageVector = Icons.Outlined.ThumbUp,
+                "Payments summary",
+                Modifier.size(17.dp))
         },
-            label = { Text(text = "MONTHLY " + alreadyPaid + " / " + sumOfPayments, fontSize = 13.sp) },
+            label = {
+                Text(text = "Subscription budget in ${selectedTimeInterval.value.toString()}: "
+                        + alreadyPaid + " / " + sumOfPayments, fontSize = 13.sp) },
             selected = selectedIndex.value == 0,
-            onClick = { /* do sth */ })
+            onClick = { expandedMenu.value = true })
     }
 }
 
