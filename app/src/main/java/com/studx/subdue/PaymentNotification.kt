@@ -9,11 +9,18 @@ import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
+/**
+ * Class that creates everything necessary to notify the user.
+ * @param[context] current context
+ */
 
 class PaymentNotification(val context: Context) {
     private val CHANNEL_ID = "Subscription reminder"
     private val NOTIFICATION_ID = 1
 
+    /**
+     * Method which creates notification channel which is used to making notifications
+     */
     private fun createNotificationChannel() {
 
         val channel =
@@ -26,6 +33,11 @@ class PaymentNotification(val context: Context) {
         notificationManager.createNotificationChannel(channel)
     }
 
+    /**
+     * Method which creates notification
+     * @param[title] title of the notification
+     * @param[message] content of the notification's message
+     */
     fun createNotification(title: String, message: String) {
         createNotificationChannel()
         val intent = Intent(context, MainActivity::class.java).apply {
@@ -50,7 +62,6 @@ class PaymentNotification(val context: Context) {
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
-        // 6
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
 
     }
