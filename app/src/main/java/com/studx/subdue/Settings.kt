@@ -1,7 +1,9 @@
 package com.studx.subdue
 
-import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
