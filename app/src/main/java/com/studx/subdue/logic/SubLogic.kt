@@ -90,7 +90,7 @@ data class SubdueSettings (
     var isDarkmode: Boolean = false,
     var sendNotifications: Boolean = true,
     var defaultCurrency: Currency = Currency.getInstance("PLN"),
-    var daysBeforePaymentAlert: Int = 2
+    var daysBeforePaymentAlert: Long = 2
         )
 
 /**
@@ -176,6 +176,10 @@ object SubLogic {
                 updatePayment(sub)
             }
         }
+    }
+
+    fun isNearPayment(sub: Subscription, daysBefore: Long): Boolean {
+        return sub.dateAnchor.minusDays(daysBefore) <= LocalDate.now()
     }
 
     /**

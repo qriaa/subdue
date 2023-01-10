@@ -31,7 +31,7 @@ import com.studx.subdue.logic.SubLogic
 import com.studx.subdue.logic.Subscription
 import java.time.temporal.ChronoUnit
 
-const val ROW_HEIGHT = 90
+const val ROW_HEIGHT = 110
 
 
 @OptIn(ExperimentalMaterial3Api::class)
