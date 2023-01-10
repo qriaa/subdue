@@ -62,18 +62,18 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription)
         Box(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier
-                .fillMaxWidth(fraction = 0.4f)
+                .fillMaxWidth(fraction = 0.5f)
                 .fillMaxHeight()
         )
         {
             Text(
-                text= subscription.name.uppercase(),
+                text= subscription.name.lowercase().replaceFirstChar { char: Char -> char.uppercase() },
                 textAlign = TextAlign.Left,
                 fontSize = 22.sp
             )
         }
 
-        Spacer(modifier = Modifier.fillMaxWidth(0.20f))
+        Spacer(modifier = Modifier.fillMaxWidth(0.04f))
 
         Column(modifier = Modifier
             .fillMaxHeight()
