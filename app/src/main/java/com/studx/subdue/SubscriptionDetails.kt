@@ -120,7 +120,7 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
             Spacer(modifier = Modifier.height(20.dp))
 
             OutlinedTextField(value = subscription.dateAnchor.toString(), onValueChange = {},
-                label = { Text("Date of expiry", Modifier.background(color = Color.White)) },
+                label = { Text("Date of expiry", Modifier.background(color = Color.Transparent)) },
                 modifier = Modifier
                     .padding(10.dp, 0.dp),
                 enabled = false,
@@ -147,7 +147,7 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
             Spacer(modifier = Modifier.height(20.dp))
 
             OutlinedTextField(value = subscription.dateAnchor.toString(), onValueChange = {},
-                label = { Text("Due date", Modifier.background(color = Color.White)) },
+                label = { Text("Due date", Modifier.background(color = Color.Transparent)) },
                 modifier = Modifier
                     .padding(10.dp, 0.dp),
                 enabled = false,
@@ -165,7 +165,7 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
         }
 
         OutlinedTextField(value = subscription.paymentMethod, onValueChange = {},
-            label = { Text("Payment method", Modifier.background(color = Color.White)) },
+            label = { Text("Payment method", Modifier.background(color = Color.Transparent)) },
             modifier = Modifier
                 .padding(10.dp, 0.dp),
             enabled = false,
@@ -182,7 +182,7 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
         )
 
         OutlinedTextField(value = subscription.notes, onValueChange = {},
-            label = { Text("Notes", Modifier.background(color = Color.White)) },
+            label = { Text("Notes", Modifier.background(color = Color.Transparent)) },
             modifier = Modifier
                 .padding(10.dp, 0.dp),
             enabled = false,

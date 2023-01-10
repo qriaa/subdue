@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
             //  .setInitialDelay(calculateTimeDifference(8), TimeUnit.SECONDS) //
             .build()
         // minimalny interwal pomiedzy wykonaniami workera to 15 minut
-        var darkMode by mutableStateOf(false)
+
         workManager.enqueueUniquePeriodicWork(
             "Subscription notification work",
             ExistingPeriodicWorkPolicy.REPLACE,
@@ -66,8 +66,10 @@ class MainActivity : ComponentActivity() {
             ExistingPeriodicWorkPolicy.REPLACE,
             workUpdateJSON
         )
+
+
         setContent {
-            SubdueTheme(darkTheme = darkMode || isSystemInDarkTheme()) {
+            SubdueTheme() {
                 SubLogic.loadSubs(this)
                 val subscriptions = SubLogic.getSubList()
                 val navController = rememberNavController()
