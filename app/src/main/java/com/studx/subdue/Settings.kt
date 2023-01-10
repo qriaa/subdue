@@ -18,17 +18,17 @@ import androidx.navigation.NavController
 import com.studx.subdue.logic.SettingsManager
 import com.studx.subdue.ui.theme.SubdueTheme
 
-//const? podsumowujac: ???
 const val DEFAULT_CURRENCY = "PLN"
 const val PAYMENT_DUE_ALERT = "1"
-const val DARK_MODE = false
+
+var darkModeState = mutableStateOf(SettingsManager.settings.isDarkmode)
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Settings(navController: NavController, context: Context) {
     SubdueTheme(
-        darkTheme = SettingsManager.settings.isDarkmode
+        darkTheme = darkModeState.value
     ) {
         Scaffold(
             topBar = {
@@ -47,12 +47,6 @@ fun Settings(navController: NavController, context: Context) {
         )
     }
 }
-
-//@Preview
-//@Composable
-//fun PreviewSettings() {
-//    Settings()
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -183,6 +177,7 @@ fun SwitchModeButton(context: Context){
     var checkedState = remember {
         mutableStateOf(SettingsManager.settings.isDarkmode)
     }
+    darkModeState = checkedState
 
     Switch(
         checked = checkedState.value,
