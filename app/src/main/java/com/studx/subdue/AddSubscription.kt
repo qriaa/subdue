@@ -411,9 +411,9 @@ fun PriceInput() {
     )
 
     if (text != "") {
-        newSubscription.cost = BigDecimal(text)
+        newSubscription.cost = BigDecimal(text).setScale(2, BigDecimal.ROUND_DOWN)
     } else {
-        newSubscription.cost = BigDecimal(0.00)
+        newSubscription.cost = BigDecimal(0.00).setScale(2, BigDecimal.ROUND_DOWN)
     }
 }
 
