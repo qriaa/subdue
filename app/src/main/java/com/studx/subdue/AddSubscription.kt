@@ -258,7 +258,7 @@ fun RecurringDetails() {
                 text = "Every",
                 fontSize = 20.sp,
                 modifier = Modifier
-                    .width(110.dp)
+                    .width(120.dp)
                     .padding(30.dp)
             )
 
