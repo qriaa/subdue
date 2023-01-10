@@ -4,6 +4,7 @@ package com.studx.subdue
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -63,13 +65,10 @@ fun MainPage(currContext: Context, subscriptions: MutableList<Subscription>, nav
                 verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 items(subscriptions.sortedBy { subscription -> subscription.dateAnchor }) { sub ->
-                    Surface(shape = RoundedCornerShape(20.dp), onClick = {
-                        navController.navigate(Screen.SubscriptionDetails.createRoute(sub.name))
-                        Toast.makeText(
-                            currContext,
-                            "Clicked on ${sub.name}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        onClick = {
+                        navController.navigate(Screen.SubscriptionDetails.createRoute(sub.id))
                     }) {
                         SubscriptionBox(rowHeight = ROW_HEIGHT, rowColor = MaterialTheme.colorScheme.primaryContainer, subscription = sub)
                     }
@@ -90,8 +89,9 @@ fun BottomBar() {
     val selectedIndex = remember { mutableStateOf(0) }
     NavigationBar {
         val (alreadyPaid, sumOfPayments)  = SubLogic.calculatePaymentsSum(ChronoUnit.MONTHS)
-        NavigationBarItem(icon = {
-            Icon(imageVector = Icons.Outlined.KeyboardArrowUp,"Payments summary")
+        NavigationBarItem(
+            icon = {
+            Icon(imageVector = Icons.Outlined.ThumbUp,"Payments summary", Modifier.size(17.dp))
         },
             label = { Text(text = "MONTHLY " + alreadyPaid + " / " + sumOfPayments, fontSize = 13.sp) },
             selected = selectedIndex.value == 0,

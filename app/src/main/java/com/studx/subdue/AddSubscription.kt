@@ -94,9 +94,6 @@ fun AddTopBar(navController: NavController, context: Context) {
         //#TODO zapis subskrypcji do bazy
         actions = {
             IconButton(onClick = {
-                if (!newSubscription.isOneOff) {
-                    newSubscription.dateAnchor = LocalDate.now().plus(newSubscription.timeMultiplier, newSubscription.timeInterval)
-                }
                 newSubscription.isEmojiImg = false // #TODO dodac obsluge emoji
                 newSubscription.image = "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                 SubLogic.addSub(newSubscription)
@@ -117,7 +114,7 @@ fun AddTopBar(navController: NavController, context: Context) {
 }
 
 //sory
-val newSubscription = Subscription(image = R.drawable.ic_launcher_foreground.toString(), isEmojiImg = false, name = "NEW SUB")
+val newSubscription = Subscription(image = R.drawable.ic_launcher_foreground.toString(), isEmojiImg = false, name = "NEW SUB", isOneOff = true)
 
 @Composable
 fun AddPage(context: Context) {
@@ -226,13 +223,10 @@ fun PagerContent(pagerState: PagerState) {
         when (pager) {
 
             0 -> {
-                newSubscription.isOneOff = true
-//                Spacer(modifier = Modifier.padding(16.dp, 16.dp))
                 OneOffDetails()
             }
 
             1 -> {
-                newSubscription.isOneOff = false
                 RecurringDetails()
             }
         }
@@ -243,12 +237,14 @@ fun PagerContent(pagerState: PagerState) {
 
 @Composable
 fun OneOffDetails() {
+    newSubscription.isOneOff = true
     DateDialog("Due to")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecurringDetails() {
+    newSubscription.isOneOff = false
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
@@ -362,7 +358,7 @@ fun DateDialog(specifed_value : String) {
         }
     }
 
-    // w tym momencie dateAnchor ma wartosc pierwszej platnosci, nie wazne czy subek jest one-off czy recurring
+    // w tym momencie dateAnchor ma wartosc wybranej daty, nie wazne czy subek jest one-off czy recurring
     newSubscription.dateAnchor = pickedDate
 }
 
