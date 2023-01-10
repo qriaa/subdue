@@ -30,7 +30,7 @@ class PaymentReminder(val ctx: Context, val params: WorkerParameters) : Worker(c
             val latestSub = subscriptions[0]
             val daysBeforePayment = SubdueSettings().daysBeforePaymentAlert
             if (SubLogic.isNearPayment(latestSub, daysBeforePayment)) {
-                val message = "Your ${latestSub.name} subscription is due in ${daysBeforePayment} days!"
+                val message = "You need to pay for your ${latestSub.name} subscription!"
                 PaymentNotification(ctx).createNotification(title, message)
             }
         }
