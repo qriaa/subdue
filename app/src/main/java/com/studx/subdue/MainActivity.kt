@@ -61,6 +61,7 @@ class MainActivity : ComponentActivity() {
             //  .setInitialDelay(calculateTimeDifference(8), TimeUnit.SECONDS) //
             .build()
         // minimalny interwal pomiedzy wykonaniami workera to 15 minut
+        
         SettingsManager.loadSettings(this)
         workManager.enqueueUniquePeriodicWork(
             "Subscription notification work",
