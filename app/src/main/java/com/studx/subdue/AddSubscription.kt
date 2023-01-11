@@ -3,6 +3,7 @@ package com.studx.subdue
 import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.math.BigDecimal
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,16 +42,19 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 
+var newSubscription: Subscription = Subscription(image = "", isEmojiImg = false, name = "NEW SUB")
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddSubscription(navController: NavController) {
+fun AddSubscription(navController: NavController, context: Context) {
     SubdueTheme(
         darkTheme = SettingsManager.settings.isDarkmode
     ){
+        newSubscription = Subscription(image = "", isEmojiImg = false, name = "NEW SUB")
         Scaffold(
             topBar = {
-                AddTopBar(navController)
+                AddTopBar(navController, context)
             },
             bottomBar = {},
             content = { innerPadding ->
@@ -69,8 +73,7 @@ fun AddSubscription(navController: NavController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTopBar(navController: NavController) {
-    val context = LocalContext.current
+fun AddTopBar(navController: NavController, context: Context) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -93,11 +96,10 @@ fun AddTopBar(navController: NavController) {
                 )
             }
         },
-        //#TODO zapis subskrypcji do bazy
         actions = {
             IconButton(onClick = {
-                newSubscription.isEmojiImg = false // #TODO dodac obsluge emoji
-                newSubscription.image = "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                newSubscription.isEmojiImg = false
+                newSubscription.image = ""
                 SubLogic.addSub(newSubscription)
                 SubLogic.saveSubs(context)
                 navController.navigate(Screen.Home.route) {
@@ -115,8 +117,6 @@ fun AddTopBar(navController: NavController) {
     )
 }
 
-//sory
-val newSubscription = Subscription(image = R.drawable.ic_launcher_foreground.toString(), isEmojiImg = false, name = "NEW SUB", isOneOff = true)
 
 @Composable
 fun AddPage() {
@@ -127,27 +127,18 @@ fun AddPage() {
     ) {
 
         Image(
-            painter = painterResource(R.drawable.ic_launcher_foreground), //wybrac domyslny obrazek, wprowadzic mozliwosc dodawania emoji, gdy brak ikony w pamieci
+            painter = painterResource(id = R.drawable.subscribe),
             contentDescription = "Subscription image",
             modifier = Modifier
                 .size(140.dp)
                 .background(Color.White)
                 .clip(CircleShape)
                 .padding(15.dp)
-                .clickable(
-                    enabled = true,
-                    onClickLabel = "Clickable image",
-                    onClick = {
-//                        val emojiPopup = EmojiPopup(View(context), EmojiInput()))
-//                        emojiPopup.toggle()
-//                        emojiPopup.dismiss()
-                    }
-                )
         )
 
         NameInput()
 
-        Row() {
+        Row {
             PriceInput()
             CurrencyList()
         }
@@ -157,20 +148,6 @@ fun AddPage() {
         PaymentMethodInput("Payment method", "e.g. Card")
         NotesInput("Notes", "")
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EmojiInput() {
-    var emoji by remember { mutableStateOf("") }
-    TextField(
-        value = emoji,
-        onValueChange = { emoji = it },
-        label = { Text("Icon") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp, 10.dp)
-    )
 }
 
 @SuppressLint("SuspiciousIndentation")
@@ -210,6 +187,7 @@ fun EmojiInput() {
                 }
             )
         }
+
         PagerContent(pagerState = pagerState)
 }
 
@@ -236,24 +214,22 @@ fun PagerContent(pagerState: PagerState) {
     }
 }
 
-
 @Composable
 fun OneOffDetails() {
-    newSubscription.isOneOff = true
     DateDialog("Due to")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+
 fun RecurringDetails() {
-    newSubscription.isOneOff = false
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp, 0.dp)
     ) {
 
-        Row() {
+        Row {
             Text(
                 text = "Every",
                 fontSize = 20.sp,
@@ -312,8 +288,9 @@ fun RecurringDetails() {
                 "WEEK" -> ChronoUnit.WEEKS
                 else -> ChronoUnit.MONTHS
             }
-        }
 
+            newSubscription.isOneOff = false
+        }
         DateDialog("First payment date")
     }
 }
@@ -360,7 +337,6 @@ fun DateDialog(specifed_value : String) {
         }
     }
 
-    // w tym momencie dateAnchor ma wartosc wybranej daty, nie wazne czy subek jest one-off czy recurring
     newSubscription.dateAnchor = pickedDate
 }
 
@@ -423,7 +399,7 @@ fun NameInput() {
     var text by remember { mutableStateOf("Name") }
     OutlinedTextField(value = text,
         onValueChange = { newText ->
-            text = newText.uppercase()
+            text = newText
         },
         trailingIcon = {
             IconButton(onClick = {
@@ -440,7 +416,7 @@ fun NameInput() {
         },
         modifier = Modifier.padding(3.dp)
     )
-    newSubscription.name = text
+    newSubscription.name = text.uppercase()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -502,9 +478,3 @@ fun NotesInput(label: String, placeholder: String) {
 
     newSubscription.notes = text
 }
-
-//@Preview
-//@Composable
-//fun PreviewAddSubsctiption(context: Context) {
-//    AddPage(context = context)
-//}
