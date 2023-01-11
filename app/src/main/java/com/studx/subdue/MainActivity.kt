@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SubdueTheme(darkTheme = SettingsManager.settings.isDarkmode) {
                 val navController = rememberNavController()
-                SetUpNavGraph(navController = navController)
+                SetUpNavGraph(navController = navController, context = this)
             }
         }
     }
@@ -93,14 +93,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SetUpNavGraph(navController: NavHostController) {
+fun SetUpNavGraph(navController: NavHostController, context: Context) {
     NavHost(navController = navController, startDestination = "home_screen") {
         composable(Screen.Home.route) {
             //#TODO wczytaj subskrypcje z bazy danych i przekaz do mainpage
             MainPage(navController)
         }
         composable(Screen.AddSub.route) {
-            AddSubscription(navController)
+            AddSubscription(navController, context)
         }
         composable(Screen.Settings.route) {
             Settings(navController)

@@ -65,7 +65,6 @@ fun SubscriptionDetails(navController: NavController, subscriptionId: String) {
 @Preview
 @Composable
 fun SubscriptionDetailsPreview() {
-//    SubscriptionDetails(subscription = subscriptions[1])
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,25 +76,14 @@ fun SubscriptionDetailsPage(subscription: Subscription) {
             .fillMaxSize()
             .padding(10.dp, 0.dp)
     ) {
-        if (subscription.isEmojiImg) {
-            Text(
-                text = subscription.image,
-                modifier = Modifier
-                    .size(100.dp)
-                    .background(Color.White)
-                    .clip(CircleShape),
-            )
-        }
-        else {
-//            Image(
-//                painter = painterResource(subscription.image.toInt()),  //#TODO przypisac odpowiedni zasob z res/drawable do wyswietlenia
-//                contentDescription = "Subscription icon",
-//                modifier = Modifier
-//                    .size(100.dp)
-//                    .background(Color.White)
-//                    .clip(CircleShape),
-//            )
-        }
+//        Image(
+//            painter = if (newSubscription.isOneOff) painterResource(id = R.drawable.one_off_subscription_icon) else painterResource(id = R.drawable.recurring_subscription_icon),
+//            contentDescription = "Subscription image",
+//            modifier = Modifier
+//                .size(100.dp)
+//                .background(Color.White)
+//                .clip(CircleShape)
+//        )
 
         Text(
             text = subscription.name,

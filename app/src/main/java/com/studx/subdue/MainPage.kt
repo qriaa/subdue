@@ -138,14 +138,14 @@ fun TopBar(navController: NavHostController) {
                 overflow = TextOverflow.Ellipsis
             )
         },
-        navigationIcon = {
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = "Menu"
-                )
-            }
-        },
+//        navigationIcon = {
+//            IconButton(onClick = { /* doSomething() */ }) {
+//                Icon(
+//                    imageVector = Icons.Outlined.Search,
+//                    contentDescription = "Menu"
+//                )
+//            }
+//        },
         actions = {
             IconButton(onClick = {
                 navController.navigate(Screen.Settings.route)

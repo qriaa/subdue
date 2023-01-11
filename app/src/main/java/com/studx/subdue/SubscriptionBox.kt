@@ -53,26 +53,16 @@ fun SubscriptionBox(rowHeight: Int, rowColor: Color, subscription: Subscription,
             .background(rowColor)
 
     ){
-        // jezeli emoji to wyswietl zamiast ikonki emoji, czyli zapisany w image tekst
-        if (subscription.isEmojiImg) {
-            Text(
-                text = subscription.image,
-                modifier = Modifier
-                    .size(90.dp)
-                    .clip(CircleShape)
+        Image(
+            painter = if (subscription.isOneOff) painterResource(id = R.drawable.one_off_subscription_icon) else painterResource(id = R.drawable.recurring_subscription_icon),
+            contentDescription = "Subscription icon",
+            alignment = Alignment.Center,
+            modifier = Modifier
+                .padding(4.dp)
+                .size(90.dp)
+                .clip(CircleShape)
             )
-        }
-        else {
-            Image(
-                painter = painterResource(R.drawable.recurring_subscription_icon),  //#TODO przypisac odpowiedni zasob z res/drawable do wyswietlenia
-                contentDescription = "Subscription icon",
-                alignment = Alignment.Center,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .size(90.dp)
-                    .clip(CircleShape)
-                )
-        }
+
 
         Spacer(modifier = Modifier.width(5.dp))
 
@@ -160,7 +150,7 @@ fun PreviewSubscription() {
         paymentMethod = "Card",
         timeInterval = ChronoUnit.MONTHS,
         dateAnchor = LocalDate.now().plus(1, ChronoUnit.MONTHS),
-        image = "R.drawable.netflix_logo",
+        image = "R.drawable.netflix_icon",
         isEmojiImg = false,
         isOneOff = false
     )
