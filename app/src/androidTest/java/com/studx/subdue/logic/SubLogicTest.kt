@@ -13,6 +13,8 @@ import java.util.*
 import com.studx.subdue.logic.*
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import kotlin.collections.ArrayList
+import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class SubLogicTest {
@@ -80,6 +82,41 @@ class SubLogicTest {
         ))
     }
 
+    // Settings testing
+    @Test
+    fun settingsSaveLoadTest() {
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        SettingsManager.revertToDefault()
+        val settings = SettingsManager.settings
+        settings.isDarkmode = true
+        settings.sendNotifications = false
+        settings.defaultCurrency = Currency.getInstance("USD")
+        settings.daysBeforePaymentAlert = 10
+        SettingsManager.saveSettings(appContext)
+        SettingsManager.revertToDefault()
+        SettingsManager.loadSettings(appContext)
+        assertEquals(true, SettingsManager.settings.isDarkmode)
+        assertEquals(false, SettingsManager.settings.sendNotifications)
+        assertEquals("USD", SettingsManager.settings.defaultCurrency.toString())
+        assertEquals(10, SettingsManager.settings.daysBeforePaymentAlert)
+    }
+
+    @Test
+    fun settingsRevertToDefaultTest(){
+        val settings = SettingsManager.settings
+        settings.isDarkmode = true
+        settings.sendNotifications = false
+        settings.defaultCurrency = Currency.getInstance("USD")
+        settings.daysBeforePaymentAlert = 10
+        SettingsManager.revertToDefault()
+        assertEquals(SubdueSettings(), SettingsManager.settings)
+    }
+
+    //SubLogic testing
+    /*
+        These might be considered too simple to test;
+        however regression testing is a thing, and here they are:
+     */
     @Test
     fun addSubTest() {
         SubLogic.removeAllSubs()
@@ -107,38 +144,43 @@ class SubLogicTest {
     }
 
     @Test
-    fun SubSaveLoadTest() {
-        SubLogic.removeAllSubs()
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val minSub = Subscription(
-            name = "test",
-            image = "a",
-            isEmojiImg = false
-        )
+    fun updatePaymentTest() {
+        prepareSubs()
+        addOneOffs()
 
-        SubLogic.addSub(minSub)
-        SubLogic.saveSubs(appContext)
-        SubLogic.loadSubs(appContext)
+        val todaysSubs = ArrayList<Subscription>()
 
-        assertEquals(SubLogic.getSubList()[0].hashCode(), minSub.hashCode())
+        for (sub in SubLogic.getSubList()) {
+            if(sub.dateAnchor.isEqual(LocalDate.now()))
+                todaysSubs.add(sub)
+        }
+
+        SubLogic.updateAllPayments()
+
+        for (sub in todaysSubs) {
+            assertFalse(sub.isOneOff)
+
+            assertFalse(sub.dateAnchor.isEqual(LocalDate.now()))
+
+            var expectedDate = LocalDate.now()
+            expectedDate = expectedDate.plus(sub.timeMultiplier, sub.timeInterval)
+
+            assertEquals(expectedDate, sub.dateAnchor)
+        }
     }
 
     @Test
-    fun settingsSaveLoadTest() {
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        SettingsManager.revertToDefault()
-        val settings = SettingsManager.settings
-        settings.isDarkmode = true
-        settings.sendNotifications = false
-        settings.defaultCurrency = Currency.getInstance("USD")
-        settings.daysBeforePaymentAlert = 10
-        SettingsManager.saveSettings(appContext)
-        SettingsManager.revertToDefault()
-        SettingsManager.loadSettings(appContext)
-        assertEquals(true, SettingsManager.settings.isDarkmode)
-        assertEquals(false, SettingsManager.settings.sendNotifications)
-        assertEquals("USD", SettingsManager.settings.defaultCurrency.toString())
-        assertEquals(10, SettingsManager.settings.daysBeforePaymentAlert)
+    fun isNearPaymentTest() {
+        prepareSubs()
+        addOneOffs()
+        SubLogic.updateAllPayments()
+        var randomDayAmnt: Long
+        for (sub in SubLogic.getSubList()){
+            randomDayAmnt = Random.nextLong(1, 400)
+            assertEquals(LocalDate.now() <= sub.dateAnchor &&
+                    sub.dateAnchor <= LocalDate.now().plusDays(randomDayAmnt),
+                SubLogic.isNearPayment(sub, randomDayAmnt))
+        }
     }
 
     @Test
@@ -159,8 +201,8 @@ class SubLogicTest {
 
         val expectedMonthResult = BigDecimal(
             (ChronoUnit.DAYS.between(monthStart, monthEnd) * 2)
-            + (ChronoUnit.WEEKS.between(monthStart, monthEnd) * 3)
-            + 5 + 7
+                    + (ChronoUnit.WEEKS.between(monthStart, monthEnd) * 3)
+                    + 5 + 7
         )
         //assertEquals(expectedMonthResult, monthPair.second)
         // weeks are counted by how many of a day of the week are in a month (WEEKS.between is
@@ -168,10 +210,27 @@ class SubLogicTest {
 
         val expectedYearResult = BigDecimal(
             (ChronoUnit.DAYS.between(yearStart, yearEnd) * 2)
-            + (ChronoUnit.WEEKS.between(yearStart, yearEnd) * 3)
-            + (ChronoUnit.MONTHS.between(yearStart, yearEnd) * 5)
-            + 7
+                    + (ChronoUnit.WEEKS.between(yearStart, yearEnd) * 3)
+                    + (ChronoUnit.MONTHS.between(yearStart, yearEnd) * 5)
+                    + 7
         )
         assertEquals(expectedYearResult, yearPair.second)
+    }
+
+    @Test
+    fun SubSaveLoadTest() {
+        SubLogic.removeAllSubs()
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        val minSub = Subscription(
+            name = "test",
+            image = "a",
+            isEmojiImg = false
+        )
+
+        SubLogic.addSub(minSub)
+        SubLogic.saveSubs(appContext)
+        SubLogic.loadSubs(appContext)
+
+        assertEquals(SubLogic.getSubList()[0].hashCode(), minSub.hashCode())
     }
 }

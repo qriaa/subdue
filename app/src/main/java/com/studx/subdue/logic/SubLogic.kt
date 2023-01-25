@@ -179,7 +179,8 @@ object SubLogic {
     }
 
     fun isNearPayment(sub: Subscription, daysBefore: Long): Boolean {
-        return sub.dateAnchor.minusDays(daysBefore) <= LocalDate.now()
+        return LocalDate.now() <= sub.dateAnchor &&
+                sub.dateAnchor <= LocalDate.now().plusDays(daysBefore)
     }
 
     /**
