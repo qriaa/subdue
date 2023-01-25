@@ -93,6 +93,20 @@ class SubLogicTest {
     }
 
     @Test
+    fun removeSubTest() {
+        SubLogic.removeAllSubs()
+        val minSub = Subscription(
+            name = "test",
+            image = "a",
+            isEmojiImg = false
+        )
+        SubLogic.addSub(minSub)
+        val subToRemove = SubLogic.getSubList()[0]
+        SubLogic.removeSub(subToRemove)
+        assertTrue(SubLogic.getSubList().isEmpty())
+    }
+
+    @Test
     fun SubSaveLoadTest() {
         SubLogic.removeAllSubs()
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
